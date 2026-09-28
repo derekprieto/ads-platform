@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # Project rules
 
 ## Design and UI (applies to every mockup, prototype and production screen)

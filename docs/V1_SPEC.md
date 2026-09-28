@@ -66,16 +66,22 @@ brief -> prompt -> 4 images -> judge -> split text -> render sizes -> ready
 3. **Generate 4 candidates** on the chosen image model (router over fal.ai + OpenAI).
 4. **Judge** (vision model): scores "looks like AI", product correct, text readable,
    on-brief. Best one wins. If all 4 fail the bar, regenerate once, then fail.
-5. **Split text**: OCR the text and positions, inpaint it out, re-add as editable
-   layers with a matched font (from ~30 curated fonts). Text marked "art" in the
-   recipe stays in the image.
-6. **Render** final PNGs at 4:5 and 9:16 from image + layers.
+5. **Text layers**: V1 places text with our own deterministic templates (one per
+   style, `src/lib/templates/AdCanvas.tsx`) on top of a text-free AI image. This is
+   the most reliable way to get sharp, editable, typo-free text. Text marked "art"
+   (neon sign, handwriting) is drawn by the image model and edited by AI region edit.
+   The "AI designs the full ad, then OCR + inpaint split" approach is tested in the
+   blind image test and only switched on if it beats templates.
+6. **Render** final PNGs at 4:5 and 9:16 from image + layers. The same component
+   renders the in-app preview and the downloaded PNG, so they always match.
 
 ## Reliability
 
-- **Durable jobs.** Every step runs as a background job (Trigger.dev) with retries,
-  exponential backoff and timeouts. Each ad has a state:
-  `queued > briefing > generating > judging > splitting > ready | failed`.
+- **Durable jobs.** Every ad is a job in a Postgres-backed queue (claimed with
+  `SKIP LOCKED`, leases expire if a worker dies) with retries and exponential
+  backoff (5s, 20s, 80s). One fewer vendor than Trigger.dev, same guarantees.
+  Each ad has a state: `queued > briefing > generating > judging > rendering > ready | failed`.
+  Every step is idempotent: a retry resumes from what is already saved.
 - **Idempotent.** Every job has an idempotency key. A retry never double-charges or duplicates.
 - **Credits ledger.** Credits are **reserved** when a pack starts, **charged** when an
   ad is ready, **refunded** automatically when it fails. Stored as ledger entries,
@@ -113,8 +119,9 @@ Job (ad, step, attempt, provider, cost, error)
 
 ## Build order (each starts when the last is done)
 
-1. **Foundations**: Next.js + TypeScript, Supabase (auth, DB, storage), Drizzle,
-   Trigger.dev, Sentry, CI with lint, typecheck and tests. Design tokens from `DESIGN.md`.
+1. **Foundations** (done): Next.js 16 + TypeScript, Postgres + Drizzle, job queue +
+   worker, credits ledger, style recipes, renderer, mock AI providers (whole app works
+   with no API keys), API, unit tests, CI.
 2. **Blind image test**: same 10 ads on the top 3 image models. CEO and media buyers
    pick blind. Winner becomes the default model per style.
 3. **Chat + brand setup**: onboarding, URL reading, Offer Brain with Hot formula, angles.
@@ -132,6 +139,36 @@ Job (ad, step, attempt, provider, cost, error)
 | fal.ai API key | Image models (Nano Banana, Seedream), editing | Pay per use |
 | Supabase project | Database, login, file storage | Free to start |
 | Vercel account | Hosting | Free to start |
-| Trigger.dev account | Background jobs | Free to start |
+| Worker host (Railway or Fly.io) | Runs the background worker 24/7 | ~$5-20/mo |
+| Sentry account | Error alerts | Free to start |
 | Stripe account | Payments (step 6) | Per transaction |
 | Domain + product name | Launch | ~$15/yr |
+
+## Also required for V1 (easy to forget)
+
+| Item | Why | Status |
+|---|---|---|
+| Real login (Supabase Auth, email magic link + Google) | Dev mode uses a per-browser cookie account | To do when Supabase keys arrive |
+| Media storage in the cloud (Supabase Storage) | Local disk only works on one machine | To do with Supabase |
+| Stripe Checkout + webhook | Real payments; webhook grants credits idempotently | Step 6 |
+| Terms of Service + Privacy Policy pages | Required for Stripe, Meta and Google login | Step 6 |
+| Meta ad policy check in copy rules | Health/finance claims, "before/after" and "you" language get ads rejected | Rules in copy validator, extend per niche |
+| Content safety | Block adult/violent/brand-impersonation prompts before they hit image models | Add to brief step |
+| Rate limits per account + daily ad cap | Protects cost and abuse | Daily cap done (1,000 ads/day), per-minute API limit to do |
+| Kill switch | Stop all generation instantly | Done (env or settings row) |
+| Cost tracking per ad + daily cost report | Know margin per credit | Per-ad cost logged; report to do |
+| Health endpoint + uptime alert | Know when failure rate > 5% | `/api/health` done; alert hook to do |
+| Backups | Database point-in-time recovery | Supabase Pro setting |
+| Admin view | See accounts, credits, failed jobs, refund manually | After internal launch |
+| Analytics | Activation (signup to first pack), keep rate, credits used | PostHog, after internal launch |
+
+## How to run it locally
+
+```
+cp .env.example .env          # leave AI keys empty to use free mock providers
+npm install
+npm run db:migrate
+npm run dev:all               # web app + worker
+npm run check                 # typecheck + lint + unit tests
+npm run test:e2e              # browser tests at 390 / 1024 / 1440px
+```
