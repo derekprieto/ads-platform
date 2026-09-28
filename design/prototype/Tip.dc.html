@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tooltip</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<span onMouseEnter="{{show}}" onMouseLeave="{{hide}}" style="position: relative; display: inline-flex; align-items: center; font-family: 'Geist', system-ui, sans-serif; color: #0A0A0A; vertical-align: middle">
+<button aria-label="{{label}}" onClick="{{toggle}}" onFocus="{{show}}" onBlur="{{hide}}" style="width: 20px; height: 20px; padding: 0; border-radius: 10px; border: 1px solid #BDBDBD; background: #FFFFFF; color: #5E5E5E; font-size: 12px; font-weight: 600; line-height: 1; cursor: help; display: flex; align-items: center; justify-content: center">i</button>
+<sc-if value="{{open}}" hint-placeholder-val="{{false}}">
+<span role="tooltip" style="{{boxStyle}}">
+<span style="font-size: 14px; font-weight: 600">{{title}}</span>
+
+<sc-if value="{{is.funnel}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="96" viewBox="0 0 248 96" aria-hidden="true">
+<polygon points="0,0 248,0 228,28 20,28" fill="#0A0A0A"></polygon>
+<polygon points="24,34 224,34 204,62 44,62" fill="#5E5E5E"></polygon>
+<polygon points="48,68 200,68 180,96 68,96" fill="#BDBDBD"></polygon>
+<text x="124" y="19" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="Geist, sans-serif">Cold · stop the scroll</text>
+<text x="124" y="53" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="Geist, sans-serif">Warm · prove it</text>
+<text x="124" y="87" text-anchor="middle" font-size="12" fill="#0A0A0A" font-family="Geist, sans-serif">Hot · close the sale</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.angles}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="96" viewBox="0 0 248 96" aria-hidden="true">
+<rect x="4" y="34" width="72" height="28" rx="6" fill="#0A0A0A"></rect>
+<text x="40" y="52" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="Geist, sans-serif">Product</text>
+<path d="M76 48 L140 16 M76 48 L140 48 M76 48 L140 80" stroke="#0A0A0A" stroke-width="1.5" fill="none"></path>
+<rect x="140" y="4" width="104" height="24" rx="12" fill="#FFFFFF" stroke="#0A0A0A"></rect>
+<rect x="140" y="36" width="104" height="24" rx="12" fill="#FFFFFF" stroke="#0A0A0A"></rect>
+<rect x="140" y="68" width="104" height="24" rx="12" fill="#FFFFFF" stroke="#0A0A0A"></rect>
+<text x="192" y="20" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">Save time</text>
+<text x="192" y="52" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">Look good</text>
+<text x="192" y="84" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">Beat the old way</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.gallery}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="72" viewBox="0 0 248 72" aria-hidden="true">
+<rect x="0" y="0" width="56" height="70" rx="4" fill="#0A0A0A"></rect>
+<rect x="64" y="0" width="56" height="70" rx="4" fill="#5E5E5E"></rect>
+<rect x="128" y="0" width="56" height="70" rx="4" fill="#BDBDBD"></rect>
+<rect x="192" y="0" width="56" height="70" rx="4" fill="#F0F0F0" stroke="#D4D4D4"></rect>
+<path d="M208 22 L232 48 M232 22 L208 48" stroke="#8A8A8A" stroke-width="2"></path>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.layers}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="96" viewBox="0 0 248 96" aria-hidden="true">
+<rect x="36" y="30" width="176" height="62" rx="6" fill="#BDBDBD"></rect>
+<text x="124" y="80" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">AI image · text in it = AI edit</text>
+<rect x="20" y="4" width="176" height="30" rx="6" fill="#FFFFFF" stroke="#0A0A0A" stroke-width="1.5"></rect>
+<text x="108" y="23" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">Text layer · edit free, instantly</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.credits}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="64" viewBox="0 0 248 64" aria-hidden="true">
+<rect x="0" y="4" width="20" height="20" rx="3" fill="#0A0A0A"></rect>
+<text x="30" y="19" font-size="12" fill="#0A0A0A" font-family="Geist, sans-serif">= 1 image ad</text>
+<rect x="0" y="38" width="20" height="20" rx="3" fill="#0A0A0A"></rect><rect x="24" y="38" width="20" height="20" rx="3" fill="#0A0A0A"></rect><rect x="48" y="38" width="20" height="20" rx="3" fill="#0A0A0A"></rect><rect x="72" y="38" width="20" height="20" rx="3" fill="#0A0A0A"></rect><rect x="96" y="38" width="20" height="20" rx="3" fill="#0A0A0A"></rect>
+<text x="124" y="53" font-size="12" fill="#0A0A0A" font-family="Geist, sans-serif">×2 = 1 video ad</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.winning}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="80" viewBox="0 0 248 80" aria-hidden="true">
+<rect x="10" y="50" width="40" height="28" fill="#D4D4D4"></rect>
+<rect x="70" y="36" width="40" height="42" fill="#D4D4D4"></rect>
+<rect x="130" y="6" width="40" height="72" fill="#0A0A0A"></rect>
+<rect x="190" y="44" width="40" height="34" fill="#D4D4D4"></rect>
+<text x="150" y="26" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="Geist, sans-serif">Winner</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.parts}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="56" viewBox="0 0 248 56" aria-hidden="true">
+<rect x="0" y="8" width="62" height="32" fill="#0A0A0A"></rect>
+<rect x="62" y="8" width="62" height="32" fill="#5E5E5E"></rect>
+<rect x="124" y="8" width="62" height="32" fill="#8A8A8A"></rect>
+<rect x="186" y="8" width="62" height="32" fill="#BDBDBD"></rect>
+<text x="31" y="28" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="Geist, sans-serif">Angle</text>
+<text x="93" y="28" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="Geist, sans-serif">Style</text>
+<text x="155" y="28" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="Geist, sans-serif">Hook</text>
+<text x="217" y="28" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">Offer</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.wearing}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="80" viewBox="0 0 248 80" aria-hidden="true">
+<path d="M4 76 L244 76" stroke="#D4D4D4"></path>
+<path d="M4 14 L60 10 L116 20 L172 44 L240 66" stroke="#0A0A0A" stroke-width="2" fill="none"></path>
+<circle cx="172" cy="44" r="4" fill="#0A0A0A"></circle>
+<text x="180" y="36" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">refresh here</text>
+<text x="4" y="10" font-size="10" fill="#5E5E5E" font-family="Geist, sans-serif">results</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.offer}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="64" viewBox="0 0 248 64" aria-hidden="true">
+<rect x="0" y="8" width="84" height="48" rx="4" fill="#FFFFFF" stroke="#0A0A0A"></rect>
+<rect x="0" y="8" width="84" height="10" rx="2" fill="#0A0A0A"></rect>
+<text x="42" y="42" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">Your site</text>
+<path d="M92 32 L148 32 M140 26 L148 32 L140 38" stroke="#0A0A0A" stroke-width="1.5" fill="none"></path>
+<rect x="156" y="8" width="92" height="48" rx="4" fill="#F0F0F0"></rect>
+<rect x="164" y="16" width="60" height="6" fill="#0A0A0A"></rect><rect x="164" y="28" width="72" height="4" fill="#8A8A8A"></rect><rect x="164" y="38" width="66" height="4" fill="#8A8A8A"></rect><rect x="164" y="46" width="48" height="4" fill="#8A8A8A"></rect>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.account}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="72" viewBox="0 0 248 72" aria-hidden="true">
+<rect x="0" y="16" width="100" height="40" rx="6" fill="#FFFFFF" stroke="#0A0A0A"></rect>
+<text x="50" y="40" text-anchor="middle" font-size="12" fill="#0A0A0A" font-family="Geist, sans-serif">Brand: 1 brand</text>
+<rect x="124" y="4" width="124" height="20" rx="4" fill="#0A0A0A"></rect>
+<rect x="124" y="28" width="124" height="20" rx="4" fill="#5E5E5E"></rect>
+<rect x="124" y="52" width="124" height="20" rx="4" fill="#BDBDBD"></rect>
+<text x="186" y="18" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="Geist, sans-serif">Agency: client 1</text>
+<text x="186" y="42" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="Geist, sans-serif">client 2</text>
+<text x="186" y="66" text-anchor="middle" font-size="11" fill="#0A0A0A" font-family="Geist, sans-serif">client 3...</text>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.formula}}" hint-placeholder-val="{{false}}">
+<svg style="max-width: 100%; height: auto" width="248" height="72" viewBox="0 0 248 72" aria-hidden="true">
+<rect x="0" y="0" width="120" height="32" rx="4" fill="#0A0A0A"></rect>
+<rect x="128" y="0" width="120" height="32" rx="4" fill="#FFE24A"></rect>
+<rect x="0" y="40" width="120" height="32" rx="4" fill="#5E5E5E"></rect>
+<rect x="128" y="40" width="120" height="32" rx="4" fill="#FFFFFF" stroke="#0A0A0A"></rect>
+<text x="60" y="21" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="Geist, sans-serif">25 in 30 days</text>
+<text x="188" y="21" text-anchor="middle" font-size="12" fill="#0A0A0A" font-family="Geist, sans-serif">or you don't pay</text>
+<text x="60" y="61" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="Geist, sans-serif">1 per city</text>
+<text x="188" y="61" text-anchor="middle" font-size="12" fill="#0A0A0A" font-family="Geist, sans-serif">full calendar</text>
+</svg>
+</sc-if>
+
+<span style="font-size: 13px; line-height: 1.45; color: #404040; white-space: normal">{{text}}</span>
+</span>
+</sc-if>
+</span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"topic":{"editor":"enum","options":["funnel","angles","gallery","layers","credits","winning","parts","wearing","offer","account","formula"],"default":"funnel"},"align":{"editor":"enum","options":["left","right"],"default":"left"},"up":{"editor":"boolean","default":false},"$preview":{"width":300,"height":260}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: false };
+  }
+  componentDidMount() {
+    this.onScroll = () => { if (this.state.open) this.setState({ open: false }); };
+    window.addEventListener("scroll", this.onScroll, true);
+  }
+  componentWillUnmount() { window.removeEventListener("scroll", this.onScroll, true); }
+  renderVals() {
+    var topic = this.props.topic || "funnel";
+    var copy = {
+      funnel: ["Funnel stages", "Every ad has one job, based on how well people know you. Cold stops the scroll, Warm proves it, Hot closes."],
+      angles: ["Angles", "An angle is the reason someone buys. New angles reach new people and beat ad fatigue."],
+      gallery: ["Gallery", "Every ad you make lands here, sorted by funnel stage. Click one to edit. Remove the ones you won't run."],
+      layers: ["Two kinds of text", "Text layers change instantly for free. Text drawn into the picture is repainted by AI for 1 credit."],
+      credits: ["Credits", "You only pay for what you make. Text edits are free."],
+      winning: ["What's winning", "Your best ad in each funnel stage, pulled from Meta."],
+      parts: ["Best parts", "We split every ad into parts, so you know exactly which part made it win."],
+      wearing: ["Wearing out", "Ads stop working after 2 to 4 weeks. We flag them before they waste money."],
+      offer: ["What we learned", "We read your site once. Every ad uses this, so fix anything wrong."],
+      formula: ["Hot ad formula", "Bottom of funnel ads that close: a number outcome + a guarantee + urgency + the end result they want."],
+      account: ["Brand or agency", "Brands get one brand and simple plans. Agencies get a folder per client and a client switcher."]
+    }[topic] || ["", ""];
+    var isList = ["funnel", "angles", "gallery", "layers", "credits", "winning", "parts", "wearing", "offer", "account", "formula"];
+    var is = {};
+    isList.forEach((k) => { is[k] = k === topic; });
+    var st = this.state;
+    var place = (e) => {
+      var el = e && e.currentTarget;
+      var r = el && el.getBoundingClientRect ? el.getBoundingClientRect() : null;
+      var vw = window.innerWidth || 1024, vh = window.innerHeight || 800;
+      var w = Math.min(272, vw - 16);
+      var pos = { left: 8, top: 40, bottom: null };
+      if (r) {
+        pos.left = Math.max(8, Math.min(r.left, vw - w - 8));
+        var roomBelow = vh - r.bottom, roomAbove = r.top;
+        if (roomBelow < 250 && roomAbove > roomBelow) { pos.bottom = vh - r.top + 6; pos.top = null; }
+        else { pos.top = r.bottom + 6; }
+      }
+      this.setState({ open: true, w: w, pos: pos });
+    };
+    return {
+      open: st.open, is: is, title: copy[0], text: copy[1], label: "About " + copy[0],
+      show: place,
+      hide: () => this.setState({ open: false }),
+      toggle: (e) => { if (st.open) this.setState({ open: false }); else place(e); },
+      boxStyle: "position: fixed; left: " + ((st.pos && st.pos.left) || 8) + "px; " + (st.pos && st.pos.bottom != null ? "bottom: " + st.pos.bottom + "px; " : "top: " + ((st.pos && st.pos.top) || 40) + "px; ") + "width: " + (st.w || 272) + "px; max-height: calc(100vh - 16px); overflow-y: auto; box-sizing: border-box; background: #FFFFFF; border: 1px solid #D4D4D4; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; text-align: left; font-weight: 400"
+    };
+  }
+}
+</script>
+</body>
+</html>

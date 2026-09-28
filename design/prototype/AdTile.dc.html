@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ad tile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&amp;family=Anton&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 240px; height: 300px; box-sizing: border-box; overflow: hidden; font-family: 'Geist', system-ui, sans-serif; color: #0A0A0A; display: flex; flex-direction: column; text-align: left; position: relative">
+
+<sc-if value="{{t.isPhoto}}" hint-placeholder-val="{{false}}">
+<div style="{{t.bg}}">
+<span style="font-size: 20px; font-weight: 600; line-height: 1.2; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.6)">{{t.a}}</span>
+<span style="flex-grow: 1"></span>
+<sc-if value="{{t.hasB}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; font-size: 13px; font-weight: 600; background: #FFFFFF; color: #0A0A0A; padding: 7px 12px; border-radius: 20px">{{t.b}}</span></sc-if>
+<span style="font-size: 10px; line-height: 1.3; color: rgba(255,255,255,0.75)">[AI photo: {{t.scene}}]</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isMeme}}" hint-placeholder-val="{{false}}">
+<div style="{{t.bgCenter}}">
+<span style="font-family: 'Anton', Impact, sans-serif; font-size: 25px; line-height: 1.05; color: #FFFFFF; text-align: center; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000">{{t.a}}</span>
+<span style="font-size: 10px; line-height: 1.3; color: rgba(255,255,255,0.75); text-align: center">[AI photo: {{t.scene}}]</span>
+<span style="font-family: 'Anton', Impact, sans-serif; font-size: 25px; line-height: 1.05; color: #FFFFFF; text-align: center; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000">{{t.b}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isArt}}" hint-placeholder-val="{{false}}">
+<div style="{{t.bgCenter}}">
+<span></span>
+<span style="{{t.artStyle}}">{{t.a}}</span>
+<span style="font-size: 10px; line-height: 1.3; color: {{t.captionColor}}; text-align: center">[AI image, text is part of the art: {{t.scene}}]</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isTweet}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; box-sizing: border-box; background: #FFFFFF; padding: 20px; display: flex; flex-direction: column; justify-content: center; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span style="width: 36px; height: 36px; border-radius: 18px; background: #C9C9C9; flex-shrink: 0"></span><div style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 600">{{t.handleName}}</span><span style="font-size: 13px; color: #5E5E5E">{{t.b}}</span></div></div>
+<span style="font-size: 16px; line-height: 1.35">{{t.a}}</span>
+<span style="font-size: 12px; color: #5E5E5E">12.4K likes · 890 reposts</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isNotes}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; box-sizing: border-box; background: #FFFFFF; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 14px; font-weight: 600; color: #B8860B">‹ Notes</span>
+<span style="font-size: 15px; line-height: 1.5; white-space: pre-line">{{t.a}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isGraphic}}" hint-placeholder-val="{{false}}">
+<div style="{{t.bg}}">
+<span style="flex-grow: 1"></span>
+<span style="font-size: 30px; font-weight: 600; line-height: 1.1; color: {{t.fg}}">{{t.a}}</span>
+<sc-if value="{{t.hasB}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; font-size: 14px; font-weight: 600; background: #FFFFFF; color: #0A0A0A; padding: 8px 14px; border-radius: 20px">{{t.b}}</span></sc-if>
+<span style="flex-grow: 1"></span>
+<span style="font-size: 10px; line-height: 1.3; color: {{t.captionColor}}">[AI background: {{t.scene}}]</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isReview}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; box-sizing: border-box; background: #FFFFFF; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 15px; color: #E08A00; letter-spacing: 2px">★★★★★</span>
+<span style="font-size: 15px; line-height: 1.35; font-weight: 600">"{{t.a}}"</span>
+<span style="font-size: 12px; color: #5E5E5E">{{t.b}} · Verified</span>
+<div style="{{t.photoBox}}"><span style="font-size: 10px; line-height: 1.3; color: rgba(255,255,255,0.8)">[AI photo: {{t.scene}}]</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isVs}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; box-sizing: border-box; background: #FFFFFF; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; font-size: 14px; font-weight: 600; text-align: center"><span style="background: #1B4DFF; color: #FFFFFF; padding: 8px; border-radius: 4px">{{t.a}}</span><span style="background: #EDEDED; padding: 8px; border-radius: 4px">{{t.b}}</span></div>
+<sc-for list="{{t.rows}}" as="r" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; font-size: 13px; line-height: 1.3"><span>✓ {{r.l}}</span><span style="color: #5E5E5E">✗ {{r.r}}</span></div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isList}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; box-sizing: border-box; background: #FFF3C4; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 20px; font-weight: 600; line-height: 1.2">{{t.a}}</span>
+<sc-for list="{{t.items}}" as="it" hint-placeholder-count="3">
+<div style="display: flex; gap: 10px; font-size: 14px; line-height: 1.3"><span style="font-weight: 600">{{it.n}}.</span><span>{{it.t}}</span></div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isFormula}}" hint-placeholder-val="{{false}}">
+<div style="{{t.bg}}">
+<span style="font-size: 64px; font-weight: 600; line-height: 1; color: #FFFFFF">{{t.big}}</span>
+<span style="font-size: 18px; font-weight: 600; line-height: 1.2; color: #FFFFFF">{{t.a}}</span>
+<span style="align-self: flex-start; font-size: 15px; font-weight: 600; background: #FFE24A; color: #0A0A0A; padding: 6px 10px; border-radius: 4px">{{t.b}}</span>
+<span style="flex-grow: 1"></span>
+<span style="font-size: 12px; line-height: 1.35; color: rgba(255,255,255,0.85)">{{t.c}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{t.isShots}}" hint-placeholder-val="{{false}}">
+<div style="{{t.bg}}">
+<span style="align-self: flex-start; font-size: 13px; font-weight: 600; background: #0A0A0A; color: #FFFFFF; padding: 6px 10px; border-radius: 4px">{{t.a}} ↘</span>
+<div style="flex-grow: 1; background: #F2F2F2; border-radius: 6px; border: 6px solid #2A2A2A; display: flex; align-items: center; justify-content: center; padding: 8px; text-align: center"><span style="font-size: 10px; color: #5E5E5E">[AI photo: {{t.scene}}]</span></div>
+<span style="align-self: flex-end; font-size: 13px; font-weight: 600; background: #FFE24A; color: #0A0A0A; padding: 6px 10px; border-radius: 4px">↖ {{t.b}}</span>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"ad":{"editor":null},"$preview":{"width":240,"height":300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var ad = this.props.ad || { tpl: "art", art: "neon", tone: "#1A1024", a: "sleep is the new flex", scene: "pink neon sign on a bedroom wall at night" };
+    var tpl = ad.tpl;
+    var tone = ad.tone || "#5A5F68";
+    var light = /^#(F|E|D)/i.test(tone);
+    var base = "flex-grow: 1; box-sizing: border-box; padding: 18px; display: flex; flex-direction: column; gap: 10px; background: " + tone;
+    var artStyle = "text-align: center; white-space: pre-line; ";
+    if (ad.art === "neon") artStyle += "font-family: 'Caveat', cursive; font-size: 40px; line-height: 1; color: #FF7AD9; text-shadow: 0 0 6px #FF3DC8, 0 0 18px #FF3DC8";
+    else if (ad.art === "hand") artStyle += "font-family: 'Caveat', cursive; font-size: 30px; line-height: 1.1; color: #1F2A44; background: #FFF08A; padding: 16px; transform: rotate(-3deg)";
+    else artStyle += "font-family: 'Anton', Impact, sans-serif; font-size: 28px; line-height: 1.1; color: #FFFFFF; letter-spacing: 1px";
+    return {
+      t: {
+        a: ad.a || "", b: ad.b || "", c: ad.c || "", big: ad.big || "", scene: ad.scene || "", rows: ad.rows || [], items: ad.items || [],
+        hasB: !!ad.b, handleName: ad.handleName || "maya", fg: ad.fg || "#FFFFFF",
+        captionColor: light ? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.75)",
+        isPhoto: tpl === "photo", isMeme: tpl === "meme", isArt: tpl === "art", isTweet: tpl === "tweet", isNotes: tpl === "notes",
+        isGraphic: tpl === "graphic", isReview: tpl === "review", isVs: tpl === "vs", isList: tpl === "list", isShots: tpl === "shots", isFormula: tpl === "formula",
+        bg: base, bgCenter: base + "; justify-content: space-between; align-items: center",
+        artStyle: artStyle,
+        photoBox: "flex-grow: 1; border-radius: 6px; padding: 8px; display: flex; align-items: flex-end; background: " + tone
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

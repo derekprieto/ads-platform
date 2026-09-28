@@ -27,8 +27,12 @@ The Funnel Pack picks them per stage. Look = social feed, not corporate.
 
 ## Hot: close it
 
+**Hot ad formula (required in every Hot ad):** number outcome + guarantee or risk reversal + urgency/scarcity + the end result they want.
+Example: "25 qualified booked appointments for HVAC companies in 30 days or you don't pay. Exclusive. No ad spend."
+
 | Style | What it is |
 |---|---|
+| Formula | Big number, outcome, guarantee badge, urgency line. Built from the Hot ad formula. |
 | Offer on color | Plain colored background, offer in 5 to 10 words, CTA |
 | Guarantee | Risk reversal front and center |
 | Urgency | Deadline or limited spots, only if true |

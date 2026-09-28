@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ads platform prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&amp;family=Anton&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Geist',system-ui,sans-serif;color:#0A0A0A;background:#FFFFFF}
+a{color:#0A0A0A}a:hover{color:#404040}
+button,input,textarea{font-family:inherit}
+.hdr{gap:32px;padding:0 24px}
+.hdr-logo-text{display:inline}
+.split{display:flex;flex-direction:row}
+.chatcol{width:clamp(360px,40%,560px);border-right:1px solid #E5E5E5}
+.gal-pad{padding-left:32px;padding-right:32px}
+.page-pad{padding:40px 64px}
+@media (max-width:1024px){.hdr{gap:16px;padding:0 16px}.gal-pad{padding-left:20px;padding-right:20px}.page-pad{padding:32px 24px}}
+@media (max-width:820px){
+.split{flex-direction:column;overflow-y:auto}
+.chatcol{width:100%;border-right:none;border-bottom:1px solid #E5E5E5;height:70vh;min-height:480px;flex-shrink:0}
+.galcol{min-height:auto;flex-shrink:0}
+.galscroll{overflow:visible}
+.hdr-logo-text{display:none}
+.hdr{flex-wrap:wrap;height:auto !important;row-gap:0;padding-top:10px}
+.hdr-nav{order:10;width:100%;height:44px !important}
+.hdr-spacer{display:none}
+.hdr-right{margin-left:auto}
+.hide-sm{display:none}
+.page-pad{padding:24px 16px}
+}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; height: 100vh; min-height: 560px; box-sizing: border-box; overflow: hidden; background: #FFFFFF; display: flex; flex-direction: column; font-family: 'Geist', system-ui, sans-serif; color: #0A0A0A">
+
+<header class="hdr" style="height: 64px; flex-shrink: 0; display: flex; align-items: center; border-bottom: 1px solid #E5E5E5; position: relative; min-width: 0">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; flex-shrink: 0"><span style="width: 20px; height: 20px; background: #0A0A0A; border-radius: 4px; display: inline-block"></span><span class="hdr-logo-text">[App name]</span></div>
+<sc-if value="{{showSwitcher}}" hint-placeholder-val="{{false}}">
+<button onClick="{{toggleMenu}}" style="height: 36px; max-width: 180px; min-width: 96px; padding: 0 12px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: #0A0A0A; display: flex; align-items: center; gap: 8px"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{brandLabel}}</span> <span style="color: #5E5E5E; flex-shrink: 0">▾</span></button>
+</sc-if>
+<nav class="hdr-nav" style="display: flex; gap: 20px; height: 64px; flex-shrink: 0">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="2">
+<button onClick="{{n.go}}" style="{{n.style}}">{{n.label}}</button>
+</sc-for>
+</nav>
+<div class="hdr-spacer" style="flex-grow: 1; min-width: 0"></div>
+<button class="hdr-right" aria-label="{{credits}} credits" onClick="{{goCredits}}" style="height: 36px; padding: 0 12px; flex-shrink: 0; white-space: nowrap; border: 1px solid #E5E5E5; border-radius: 6px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: #0A0A0A">{{credits}}<span class="hide-sm"> credits</span></button>
+<button aria-label="Account menu" onClick="{{accountMenu}}" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 1px solid #D4D4D4; background: #F7F7F7; font-size: 13px; font-weight: 600; cursor: pointer; color: #0A0A0A">A</button>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; top: 56px; left: 16px; width: 260px; max-width: calc(100% - 32px); box-sizing: border-box; background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 2px; z-index: 5">
+<span style="font-size: 12px; color: #5E5E5E; padding: 6px 8px">Clients</span>
+<sc-for list="{{menuBrands}}" as="mb" hint-placeholder-count="2">
+<button onClick="{{mb.pick}}" style="height: 40px; padding: 0 8px; border: none; background: #FFFFFF; border-radius: 6px; text-align: left; font-size: 14px; cursor: pointer; color: #0A0A0A; display: flex; justify-content: space-between; align-items: center"><span>{{mb.name}}</span><span style="font-size: 12px; color: #5E5E5E">{{mb.type}}</span></button>
+</sc-for>
+<button onClick="{{menuNew}}" style="height: 40px; padding: 0 8px; border: none; border-top: 1px solid #E5E5E5; background: #FFFFFF; text-align: left; font-size: 14px; cursor: pointer; color: #0A0A0A">+ New client</button>
+</div>
+</sc-if>
+</header>
+
+<sc-if value="{{is.create}}" hint-placeholder-val="{{true}}">
+<div class="split" style="flex-grow: 1; min-height: 0">
+
+<section aria-label="Assistant" class="chatcol" style="flex-shrink: 0; display: flex; flex-direction: column; min-height: 0; box-sizing: border-box">
+<div style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; min-height: 0">
+<div style="display: flex; flex-direction: column; gap: 20px; padding: 24px 20px">
+<sc-for list="{{chat}}" as="m" hint-placeholder-count="3">
+<sc-if value="{{m.isAi}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<span style="width: 28px; height: 28px; border-radius: 6px; background: #0A0A0A; flex-shrink: 0"></span>
+<div style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1; min-width: 0">
+<div style="display: flex; gap: 8px; align-items: flex-start"><span style="font-size: 15px; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; min-width: 0">{{m.text}}</span><sc-if value="{{m.hasTip}}" hint-placeholder-val="{{false}}"><span style="padding-top: 2px; flex-shrink: 0"><dc-import name="Tip" topic="{{m.tip}}" align="right" up="{{yes}}" hint-size="20px,20px"></dc-import></span></sc-if></div>
+
+<sc-if value="{{m.isOffer}}" hint-placeholder-val="{{false}}">
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="display: flex; gap: 8px; align-items: center; font-size: 15px; font-weight: 600">{{m.brandName}}<dc-import name="Tip" topic="offer" up="{{yes}}" hint-size="20px,20px"></dc-import></span><span style="font-size: 12px; padding: 4px 8px; border: 1px solid #D4D4D4; border-radius: 12px">{{m.brandType}}</span></div>
+<sc-for list="{{m.fields}}" as="f" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #5E5E5E">{{f.label}}</span><span style="font-size: 14px; line-height: 1.4">{{f.value}}</span></div>
+</sc-for>
+<div style="border-top: 1px solid #E5E5E5; padding-top: 12px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 600">Hot ad formula<dc-import name="Tip" topic="formula" hint-size="20px,20px"></dc-import></span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 8px">
+<sc-for list="{{m.formula}}" as="fx" hint-placeholder-count="4">
+<div style="background: #F7F7F7; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #5E5E5E">{{fx.label}}</span><span style="font-size: 13px; line-height: 1.35">{{fx.value}}</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{m.isAngles}}" hint-placeholder-val="{{false}}">
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; gap: 16px; padding: 4px 8px 8px; font-size: 12px; color: #5E5E5E; border-bottom: 1px solid #E5E5E5"><span><strong style="color: #0A0A0A">Proven</strong>: works for most brands like yours</span><span><strong style="color: #0A0A0A">Try this</strong>: rarely used by competitors</span></div>
+<sc-for list="{{m.angleRows}}" as="ag" hint-placeholder-count="5">
+<button onClick="{{ag.toggle}}" aria-pressed="{{ag.pressed}}" style="{{ag.style}}">
+<span style="{{ag.box}}">{{ag.mark}}</span>
+<span style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1; text-align: left"><span style="font-size: 14px; font-weight: 600">{{ag.name}}</span><span style="font-size: 13px; color: #5E5E5E; line-height: 1.35">{{ag.line}}</span></span>
+<sc-if value="{{ag.hasTag}}" hint-placeholder-val="{{false}}"><span style="{{ag.tagStyle}}">{{ag.tag}}</span></sc-if>
+</button>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{m.isProgress}}" hint-placeholder-val="{{false}}">
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 14px; font-weight: 600">{{m.title}}</span>
+<div style="height: 4px; background: #EDEDED; border-radius: 2px; overflow: hidden"><div style="{{m.bar}}"></div></div>
+<span style="font-size: 13px; color: #5E5E5E">{{m.sub}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{m.isAds}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{m.thumbs}}" as="th" hint-placeholder-count="4">
+<button onClick="{{th.open}}" aria-label="Edit ad" style="width: 108px; height: 135px; padding: 0; border: 1px solid #E5E5E5; border-radius: 6px; overflow: hidden; cursor: pointer; background: #FFFFFF; flex-shrink: 0"><div style="width: 240px; height: 300px; transform: scale(0.45); transform-origin: top left"><dc-import name="AdTile" ad="{{th.ad}}" hint-size="240px,300px"></dc-import></div></button>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{m.showOpts}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{m.opts}}" as="o" hint-placeholder-count="3">
+<button onClick="{{o.pick}}" style="min-height: 40px; padding: 8px 14px; border: 1px solid #0A0A0A; border-radius: 20px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: #0A0A0A; text-align: left">{{o.label}}</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{m.isMe}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; justify-content: flex-end"><span style="max-width: 80%; overflow-wrap: anywhere; background: #F0F0F0; border-radius: 12px; padding: 10px 14px; font-size: 15px; line-height: 1.4">{{m.text}}</span></div>
+</sc-if>
+</sc-for>
+</div>
+</div>
+<div style="border-top: 1px solid #E5E5E5; padding: 12px 16px; display: flex; gap: 8px; align-items: center">
+<input aria-label="Message the assistant" size="1" placeholder="{{composerHint}}" value="{{draft}}" onChange="{{onDraft}}" onKeyDown="{{onKey}}" style="flex-grow: 1; height: 44px; box-sizing: border-box; padding: 0 14px; border: 1px solid #D4D4D4; border-radius: 22px; font-size: 15px; color: #0A0A0A">
+<button onClick="{{send}}" style="height: 44px; padding: 0 20px; flex-shrink: 0; background: #0A0A0A; color: #FFFFFF; border: none; border-radius: 22px; font-size: 14px; font-weight: 600; cursor: pointer">Send</button>
+</div>
+</section>
+
+<section aria-label="Gallery" class="galcol" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0">
+<div class="gal-pad" style="padding-top: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="display: flex; gap: 8px; align-items: center; font-size: 20px; font-weight: 600">Gallery<dc-import name="Tip" topic="gallery" hint-size="20px,20px"></dc-import></span><span style="font-size: 13px; color: #5E5E5E">{{galleryHint}}</span></div>
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+<sc-if value="{{isAgency}}" hint-placeholder-val="{{false}}"><button onClick="{{share}}" style="height: 44px; padding: 0 16px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: #0A0A0A">Share with client</button></sc-if>
+<button onClick="{{download}}" style="height: 44px; padding: 0 20px; background: #0A0A0A; color: #FFFFFF; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer">Download {{kept}} ads</button>
+</div>
+</div>
+<div role="tablist" style="display: flex; gap: 24px; border-bottom: 1px solid #E5E5E5; flex-wrap: wrap">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button role="tab" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+<span style="display: flex; align-items: center"><dc-import name="Tip" topic="funnel" hint-size="20px,20px"></dc-import></span>
+</div>
+</div>
+<div class="gal-pad galscroll" style="flex-grow: 1; overflow-y: auto; padding-top: 24px; padding-bottom: 24px; min-height: 0">
+<sc-if value="{{galleryEmpty}}" hint-placeholder-val="{{true}}">
+<div style="height: 100%; min-height: 240px; box-sizing: border-box; padding: 24px; border: 1px dashed #D4D4D4; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center">
+<span style="font-size: 16px; font-weight: 600">Your ads show up here</span>
+<span style="font-size: 14px; color: #5E5E5E">Answer the assistant on the left. It takes about 1 minute.</span>
+</div>
+</sc-if>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, 180px); gap: 24px 20px; justify-content: start">
+<sc-for list="{{tabAds}}" as="ad" hint-placeholder-count="8">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<button onClick="{{ad.open}}" aria-label="Edit ad" style="{{ad.tileStyle}}"><div style="width: 240px; height: 300px; transform: scale(0.75); transform-origin: top left"><dc-import name="AdTile" ad="{{ad.data}}" hint-size="240px,300px"></dc-import></div></button>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<div style="display: flex; flex-direction: column; min-width: 0"><span style="font-size: 12px; color: #0A0A0A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ad.label}}</span><span style="font-size: 12px; color: #5E5E5E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ad.angleLabel}}</span></div>
+<button onClick="{{ad.toggle}}" style="height: 32px; padding: 0 10px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 13px; cursor: pointer; color: #0A0A0A; flex-shrink: 0">{{ad.btn}}</button>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{is.results}}" hint-placeholder-val="{{false}}">
+<main class="page-pad" style="display: flex; flex-direction: column; gap: 32px; max-width: 1440px; width: 100%; box-sizing: border-box; align-self: center; overflow-y: auto; flex-grow: 1; min-height: 0">
+<sc-if value="{{metaOff}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 32px; font-weight: 600">Results</h1>
+<p style="margin: 0; font-size: 16px; color: #5E5E5E">Connect Meta to see which ads, angles and styles win.</p>
+</div>
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center">
+<span style="font-size: 20px; font-weight: 600">Connect your Meta ad account</span>
+<span style="font-size: 14px; color: #5E5E5E; max-width: 440px">Read only. We never change your ads. We match each ad to its parts so you know exactly what wins.</span>
+<button onClick="{{connectMeta}}" style="height: 44px; padding: 0 24px; background: #0A0A0A; color: #FFFFFF; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer">{{metaBtn}}</button>
+</div>
+</sc-if>
+<sc-if value="{{metaOn}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span style="font-size: 13px; color: #5E5E5E">Nimbus Sleep · Meta connected · Last 14 days · Sample data</span>
+<h1 style="margin: 0; font-size: 32px; font-weight: 600; display: flex; gap: 12px; align-items: center">What's winning<dc-import name="Tip" topic="winning" hint-size="20px,20px"></dc-import></h1>
+<p style="margin: 0; font-size: 16px; color: #5E5E5E">We match every Meta ad to its parts, so you see which angle, style and hook win.</p>
+</div>
+<button onClick="{{moreLikeWinners}}" style="height: 44px; padding: 0 20px; background: #0A0A0A; color: #FFFFFF; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer">Make more like winners</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 24px">
+<sc-for list="{{winners}}" as="w" hint-placeholder-count="3">
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; padding: 20px; display: flex; gap: 20px">
+<div style="width: 144px; height: 180px; flex-shrink: 0; border: 1px solid #E5E5E5; border-radius: 6px; overflow: hidden"><div style="width: 240px; height: 300px; transform: scale(0.6); transform-origin: top left"><dc-import name="AdTile" ad="{{w.ad}}" hint-size="240px,300px"></dc-import></div></div>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5E5E5E">{{w.stage}} winner</span>
+<span style="font-size: 16px; font-weight: 600">{{w.kind}}</span>
+<span style="font-size: 14px">{{w.m1}}</span>
+<span style="font-size: 14px">{{w.m2}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 24px">
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; display: flex; flex-direction: column">
+<div style="padding: 16px 20px; border-bottom: 1px solid #E5E5E5; font-size: 16px; font-weight: 600; display: flex; gap: 8px; align-items: center">Best parts<dc-import name="Tip" topic="parts" hint-size="20px,20px"></dc-import></div>
+<sc-for list="{{parts}}" as="p" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid #E5E5E5; font-size: 14px">
+<span style="color: #5E5E5E">{{p.part}}</span><span style="font-weight: 600">{{p.value}}</span><span style="text-align: right">{{p.metric}}</span>
+</div>
+</sc-for>
+</div>
+<div style="border: 1px solid #E5E5E5; border-radius: 8px; display: flex; flex-direction: column">
+<div style="padding: 16px 20px; border-bottom: 1px solid #E5E5E5; display: flex; justify-content: space-between; align-items: center"><span style="font-size: 16px; font-weight: 600; display: flex; gap: 8px; align-items: center">Wearing out<dc-import name="Tip" topic="wearing" hint-size="20px,20px"></dc-import></span><span style="font-size: 13px; color: #5E5E5E">Replace these soon</span></div>
+<sc-for list="{{tired}}" as="t" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid #E5E5E5; font-size: 14px">
+<span style="font-weight: 600">{{t.name}}</span><span style="color: #5E5E5E">{{t.why}}</span>
+<button onClick="{{t.refresh}}" style="justify-self: end; height: 32px; padding: 0 12px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 13px; cursor: pointer; color: #0A0A0A">{{t.btn}}</button>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</main>
+</sc-if>
+
+<sc-if value="{{is.credits}}" hint-placeholder-val="{{false}}">
+<main class="page-pad" style="display: flex; justify-content: center; overflow-y: auto; flex-grow: 1; min-height: 0">
+<div style="width: 100%; max-width: 1088px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<h1 style="margin: 0; font-size: 32px; font-weight: 600; display: flex; gap: 12px; align-items: center">Credits<dc-import name="Tip" topic="credits" hint-size="20px,20px"></dc-import></h1>
+<p style="margin: 0; font-size: 16px; color: #5E5E5E">Pay only for what you make. 1 image ad = 1 credit. 1 video ad = 10 credits. Text edits are free.</p>
+</div>
+<div style="display: flex; align-items: center; gap: 16px; border: 1px solid #E5E5E5; border-radius: 8px; padding: 12px 16px">
+<div style="display: flex; flex-direction: column"><span style="font-size: 13px; color: #5E5E5E">Balance</span><span style="font-size: 20px; font-weight: 600">{{credits}} credits</span></div>
+<button onClick="{{topUp}}" style="height: 44px; padding: 0 20px; background: #0A0A0A; color: #FFFFFF; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer">Top up 100 for $40</button>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 24px">
+<sc-for list="{{plans}}" as="p" hint-placeholder-count="3">
+<div style="{{p.box}}">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 16px; font-weight: 600">{{p.name}}</span><span style="{{p.tagStyle}}">{{p.tag}}</span></div>
+<div style="display: flex; align-items: baseline; gap: 4px"><span style="font-size: 40px; font-weight: 600">{{p.price}}</span><span style="font-size: 14px; color: #5E5E5E">/ month</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; padding: 16px 0; border-top: 1px solid #E5E5E5; border-bottom: 1px solid #E5E5E5">
+<span style="font-weight: 600">{{p.credits}} credits every month</span>
+<span>{{p.per}} per image ad</span>
+<span>Up to {{p.videos}} video ads</span>
+<span>Unlimited brands and team</span>
+</div>
+<button onClick="{{p.choose}}" style="{{p.btn}}">{{p.cta}}</button>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 24px; background: #F7F7F7; border-radius: 8px; padding: 20px 24px; font-size: 14px">
+<span>New accounts get <strong>20 free credits</strong>: one full Funnel Pack.</span>
+<span style="color: #5E5E5E">Unused credits roll over while you're subscribed.</span>
+</div>
+</div>
+</main>
+</sc-if>
+
+<sc-if value="{{editing}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 10, 0.45); display: flex; justify-content: flex-end; z-index: 10">
+<div role="dialog" aria-label="Edit ad" style="width: 520px; max-width: 100%; height: 100%; box-sizing: border-box; background: #FFFFFF; padding: 28px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 20px; font-weight: 600; display: flex; gap: 8px; align-items: center">Edit ad<dc-import name="Tip" topic="layers" hint-size="20px,20px"></dc-import></span><span style="font-size: 13px; color: #5E5E5E">{{edit.meta}}</span></div>
+<button aria-label="Close" onClick="{{closeEdit}}" style="width: 36px; height: 36px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 18px; cursor: pointer; color: #0A0A0A">×</button>
+</div>
+<div style="width: 240px; height: 300px; align-self: center; border: 1px solid #E5E5E5; border-radius: 8px; overflow: hidden; position: relative; flex-shrink: 0">
+<div style="width: 240px; height: 300px"><dc-import name="AdTile" ad="{{edit.data}}" hint-size="240px,300px"></dc-import></div>
+<sc-if value="{{artBusy}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">Updating the image with AI...</div>
+</sc-if>
+</div>
+<sc-for list="{{edit.layers}}" as="l" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<label for="{{l.id}}" style="font-size: 14px; font-weight: 600">{{l.label}}</label>
+<span style="{{l.badgeStyle}}">{{l.badge}}</span>
+</div>
+<textarea id="{{l.id}}" rows="2" value="{{l.value}}" onChange="{{l.onChange}}" style="box-sizing: border-box; padding: 10px 12px; border: 1px solid #D4D4D4; border-radius: 6px; font-size: 14px; resize: vertical; color: #0A0A0A"></textarea>
+<sc-if value="{{l.isArt}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 12px">
+<span style="font-size: 12px; color: #5E5E5E; line-height: 1.4; flex: 1 1 200px">This text is drawn into the picture. AI repaints just this spot in the same style.</span>
+<button onClick="{{l.apply}}" style="height: 36px; padding: 0 14px; border: none; border-radius: 6px; background: #0A0A0A; color: #FFFFFF; font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0">Update · 1 credit</button>
+</div>
+</sc-if>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button onClick="{{newHeadline}}" style="height: 44px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: #0A0A0A">New headline · free</button>
+<button onClick="{{undo}}" style="{{undoStyle}}">Undo</button>
+</div>
+<button onClick="{{moreLikeThis}}" style="height: 44px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: #0A0A0A">Make 3 more like this · 3 credits</button>
+<button onClick="{{closeEdit}}" style="height: 44px; background: #0A0A0A; color: #FFFFFF; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer">Done</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+<div role="status" style="position: absolute; left: 50%; bottom: 32px; transform: translateX(-50%); max-width: calc(100% - 32px); box-sizing: border-box; text-align: center; background: #0A0A0A; color: #FFFFFF; padding: 12px 20px; border-radius: 6px; font-size: 14px; z-index: 20">{{toast}}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+var ADS = {
+  ecom: [
+    { stage: "cold", kind: "Meme", tpl: "meme", tone: "#3A3F4B", scene: "tired woman in bed lit by her phone at 2am, iPhone flash", a: "ME AT 2AM", b: "\"JUST ONE MORE VIDEO\"" },
+    { stage: "cold", kind: "UGC photo", tpl: "photo", tone: "#6B5B4E", scene: "hand holding gummy bottle over a messy nightstand, iPhone", a: "POV: you slept 8 hours for the first time since 2019" },
+    { stage: "cold", kind: "Tweet", tpl: "tweet", a: "nobody warns you the worst part of being tired is being wide awake at 2am", b: "@mayasleeps" },
+    { stage: "cold", kind: "Notes app", tpl: "notes", a: "things that fixed my sleep:\n1. phone out of bedroom\n2. same bedtime\n3. 2 nimbus gummies" },
+    { stage: "cold", kind: "Neon sign", tpl: "art", art: "neon", tone: "#1A1024", scene: "pink neon sign on a bedroom wall at night", a: "sleep is the new flex" },
+    { stage: "cold", kind: "Bold claim", tpl: "graphic", tone: "#FFE24A", fg: "#0A0A0A", scene: "flat yellow paper texture", a: "You're not lazy. You're tired." },
+    { stage: "cold", kind: "Flash photo", tpl: "photo", tone: "#7A6A58", scene: "couple laughing in the kitchen in the morning, direct flash", a: "POV: your partner asks why you're in a good mood" },
+    { stage: "cold", kind: "Meme", tpl: "meme", tone: "#2F3440", scene: "man staring at the ceiling in bed, dark room", a: "MY BRAIN AT 3AM", b: "REPLAYING SOMETHING FROM 2014" },
+    { stage: "cold", kind: "Sticky note", tpl: "art", art: "hand", tone: "#D9D2C5", scene: "sticky note on a bathroom mirror", a: "take your gummies.\nfuture you says thanks" },
+    { stage: "cold", kind: "Tweet", tpl: "tweet", a: "sleep gummies that don't leave you groggy should be a human right", b: "@tiredtom", handleName: "tom" },
+    { stage: "warm", kind: "Review", tpl: "review", tone: "#8C7B6B", scene: "woman in a robe holding the bottle, natural light", a: "I fall asleep in 20 minutes now. Used to take me 2 hours.", b: "Sarah K." },
+    { stage: "warm", kind: "Before / after", tpl: "photo", tone: "#555B63", scene: "split photo: tired at desk vs smiling on a morning run", a: "Week 1 vs week 3" },
+    { stage: "warm", kind: "Us vs them", tpl: "vs", a: "Nimbus", b: "Melatonin", rows: [{ l: "No groggy mornings", r: "Morning fog" }, { l: "Magnesium", r: "Hormone" }, { l: "Not habit forming", r: "Wears off" }] },
+    { stage: "warm", kind: "List", tpl: "list", a: "3 reasons people switch to Nimbus", items: [{ n: 1, t: "No morning fog" }, { n: 2, t: "Tastes like berries" }, { n: 3, t: "Works in 30 minutes" }] },
+    { stage: "warm", kind: "Review", tpl: "review", tone: "#6E6259", scene: "man stretching by a sunny window", a: "My wife stopped asking why I'm grumpy.", b: "Dan R." },
+    { stage: "warm", kind: "Product label", tpl: "art", art: "label", tone: "#2B3A55", scene: "close up of the bottle, words printed on the label", a: "NO MELATONIN.\nNO GROG." },
+    { stage: "hot", kind: "Offer", tpl: "graphic", tone: "#FF5A1F", scene: "bottle on an orange backdrop, hard shadow", a: "Your first bottle 40% off", b: "Claim offer" },
+    { stage: "hot", kind: "Formula", tpl: "formula", tone: "#0A0A0A", big: "20", a: "minutes to fall asleep, within 30 nights", b: "Or your money back.", c: "40% off ends Sunday · Wake up clear" },
+    { stage: "hot", kind: "Objection", tpl: "graphic", tone: "#111111", scene: "dark matte texture", a: "Still thinking about it? You can return it. Even empty." },
+    { stage: "hot", kind: "Urgency", tpl: "graphic", tone: "#FFE24A", fg: "#0A0A0A", scene: "yellow backdrop with the bottle", a: "40% off ends Sunday", b: "Shop now" }
+  ],
+  saas: [
+    { stage: "cold", kind: "Meme", tpl: "meme", tone: "#3B4250", scene: "exhausted guy at a laptop in an open office", a: "ME UPDATING 4 SPREADSHEETS", b: "FOR ONE MEETING" },
+    { stage: "cold", kind: "Tweet", tpl: "tweet", a: "if your team needs a meeting to find a file, the problem isn't the team", b: "@opsjess", handleName: "jess" },
+    { stage: "cold", kind: "Notes app", tpl: "notes", a: "things I stopped doing after Flowdesk:\n- status meetings\n- 'just checking in' emails\n- Sunday night dread" },
+    { stage: "cold", kind: "UGC photo", tpl: "photo", tone: "#5E5446", scene: "founder at a kitchen table with a laptop, morning light, iPhone", a: "POV: your Monday has zero meetings" },
+    { stage: "cold", kind: "Whiteboard", tpl: "art", art: "hand", tone: "#E8E8E8", scene: "office whiteboard with marker handwriting", a: "meetings: 0\nwork done: all of it" },
+    { stage: "cold", kind: "Bold claim", tpl: "graphic", tone: "#1B4DFF", scene: "flat blue backdrop", a: "Your team isn't slow. Your tools are." },
+    { stage: "cold", kind: "Meme", tpl: "meme", tone: "#2E3138", scene: "person staring at a crowded calendar on a monitor", a: "MY CALENDAR ON MONDAY", b: "TETRIS LEVEL 99" },
+    { stage: "cold", kind: "Flash photo", tpl: "photo", tone: "#6A6152", scene: "messy desk covered in sticky notes, direct flash", a: "this was our project plan. was." },
+    { stage: "cold", kind: "Tweet", tpl: "tweet", a: "hot take: 80% of meetings could be a 2 minute update", b: "@pmdan", handleName: "dan" },
+    { stage: "cold", kind: "Bold claim", tpl: "graphic", tone: "#FFE24A", fg: "#0A0A0A", scene: "flat yellow backdrop", a: "Cancel the standup." },
+    { stage: "warm", kind: "Screenshot callouts", tpl: "shots", tone: "#D9DCE1", scene: "laptop showing the Flowdesk dashboard", a: "Every project, one screen", b: "Updates write themselves" },
+    { stage: "warm", kind: "Review", tpl: "review", tone: "#5B5F66", scene: "ops lead smiling at her desk", a: "We cut 6 hours of meetings a week.", b: "Priya S., Head of Ops" },
+    { stage: "warm", kind: "Us vs them", tpl: "vs", a: "Flowdesk", b: "Spreadsheets", rows: [{ l: "Live updates", r: "Stale by Tuesday" }, { l: "One place", r: "12 tabs" }, { l: "2 min setup", r: "Weekend project" }] },
+    { stage: "warm", kind: "List", tpl: "list", a: "3 reasons teams switch to Flowdesk", items: [{ n: 1, t: "No more status meetings" }, { n: 2, t: "Works with Slack" }, { n: 3, t: "Set up in 2 minutes" }] },
+    { stage: "warm", kind: "Founder UGC", tpl: "photo", tone: "#4E4A44", scene: "founder talking to camera in the office, iPhone selfie", a: "I built this because I hated our Monday meeting" },
+    { stage: "warm", kind: "Review", tpl: "review", tone: "#6B665F", scene: "small team high-fiving in a meeting room", a: "Our team finally knows what everyone's doing.", b: "Marcus L., CEO" },
+    { stage: "hot", kind: "Offer", tpl: "graphic", tone: "#1B4DFF", scene: "blue backdrop with the app on a phone", a: "Free for 14 days. No card.", b: "Start free" },
+    { stage: "hot", kind: "Formula", tpl: "formula", tone: "#0A0A0A", big: "6", a: "hours of meetings back every week", b: "Free for 14 days. No card.", c: "First month free ends Friday" },
+    { stage: "hot", kind: "Objection", tpl: "graphic", tone: "#111111", scene: "dark matte texture", a: "Worried about switching? We move your data for you." },
+    { stage: "hot", kind: "Urgency", tpl: "graphic", tone: "#FFE24A", fg: "#0A0A0A", scene: "yellow backdrop", a: "First month free ends Friday", b: "Claim it" }
+  ],
+  services: [
+    { stage: "cold", kind: "Meme", tpl: "meme", tone: "#3A3F4B", scene: "HVAC owner staring at his phone in a work truck", a: "ME WAITING FOR THE PHONE TO RING", b: "IN THE SLOW SEASON" },
+    { stage: "cold", kind: "Tweet", tpl: "tweet", a: "if your HVAC business runs on referrals, you don't have a pipeline, you have a waiting room", b: "@hvacmike", handleName: "mike" },
+    { stage: "cold", kind: "Notes app", tpl: "notes", a: "stuff I stopped doing once we got booked out:\n- cold calling\n- buying shared leads\n- praying in October" },
+    { stage: "cold", kind: "UGC photo", tpl: "photo", tone: "#5B5145", scene: "HVAC tech in a van smiling at a full calendar on his phone, iPhone", a: "POV: your calendar is full before spring even starts" },
+    { stage: "cold", kind: "Whiteboard", tpl: "art", art: "hand", tone: "#E8E8E8", scene: "shop whiteboard with marker handwriting", a: "booked this week: 27\nshared leads: 0" },
+    { stage: "cold", kind: "Bold claim", tpl: "graphic", tone: "#1B4DFF", scene: "flat blue backdrop", a: "Shared leads are why your phone is quiet." },
+    { stage: "cold", kind: "Meme", tpl: "meme", tone: "#2E3138", scene: "man answering a phone looking annoyed", a: "THE SHARED LEAD YOU PAID $80 FOR", b: "ALREADY BOOKED WITH 5 OTHER GUYS" },
+    { stage: "cold", kind: "Flash photo", tpl: "photo", tone: "#6A6152", scene: "office phone on a desk with sticky notes, direct flash", a: "our office phone. it doesn't stop now." },
+    { stage: "cold", kind: "Tweet", tpl: "tweet", a: "stop paying for leads that 5 other companies also bought", b: "@techjoe", handleName: "joe" },
+    { stage: "cold", kind: "Bold claim", tpl: "graphic", tone: "#FFE24A", fg: "#0A0A0A", scene: "flat yellow backdrop", a: "Your competitors are booked. Are you?" },
+    { stage: "warm", kind: "Review", tpl: "review", tone: "#6E6259", scene: "HVAC owner in front of his trucks", a: "27 booked jobs in the first month. Real homeowners.", b: "Carlos M., Apex Air" },
+    { stage: "warm", kind: "Us vs them", tpl: "vs", a: "Us", b: "Shared leads", rows: [{ l: "Exclusive to you", r: "Sold 5 times" }, { l: "Booked on your calendar", r: "Just a phone number" }, { l: "No ad spend", r: "You pay per click" }] },
+    { stage: "warm", kind: "List", tpl: "list", a: "How we fill your calendar", items: [{ n: 1, t: "We run the ads" }, { n: 2, t: "We qualify every lead" }, { n: 3, t: "You show up to booked jobs" }] },
+    { stage: "warm", kind: "Founder UGC", tpl: "photo", tone: "#4E4A44", scene: "agency founder talking to camera, iPhone selfie", a: "we only take 1 HVAC company per city. here's why" },
+    { stage: "warm", kind: "Review", tpl: "review", tone: "#5B5F66", scene: "tech shaking hands with a homeowner", a: "Best slow season we've ever had.", b: "Dana P., Comfort Pro" },
+    { stage: "warm", kind: "Screenshot callouts", tpl: "shots", tone: "#D9DCE1", scene: "phone showing a full booking calendar", a: "Booked for you", b: "Qualified, not just leads" },
+    { stage: "hot", kind: "Formula", tpl: "formula", tone: "#0A0A0A", big: "25", a: "qualified booked HVAC appointments in 30 days", b: "Or you don't pay.", c: "Exclusive · 1 company per city · No ad spend" },
+    { stage: "hot", kind: "Formula", tpl: "formula", tone: "#1B4DFF", big: "30", a: "days to a full install calendar", b: "25 booked jobs or it's free.", c: "Only 2 cities left this month" },
+    { stage: "hot", kind: "Objection", tpl: "graphic", tone: "#111111", scene: "dark matte texture", a: "Worried it won't work in your area? You don't pay unless we deliver." },
+    { stage: "hot", kind: "Urgency", tpl: "graphic", tone: "#FFE24A", fg: "#0A0A0A", scene: "yellow backdrop with a map pin", a: "2 spots left this month", b: "Claim your city" }
+  ]
+};
+var HEADLINES = {
+  ecom: ["Fall asleep in 20 minutes.", "Your 2am brain is lying to you.", "Sleep is the cheapest glow up.", "Tired is not a personality.", "Wake up clear. No melatonin."],
+  saas: ["Cancel the standup.", "Your Monday, minus the meetings.", "Know what everyone's doing. Without asking.", "Updates that write themselves.", "Less talking about work. More work."],
+  services: ["25 booked jobs in 30 days.", "No ad spend. No shared leads.", "Your calendar, full.", "Only 1 HVAC company per city.", "Booked jobs or you don't pay."]
+};
+var OFFERS = {
+  ecom: [["What you sell", "Magnesium sleep gummies that help you fall asleep fast and wake up clear."], ["The offer", "First bottle 40% off. $29 after. 30-night money-back guarantee."], ["Who buys it", "Busy adults 25 to 45 who can't turn their brain off at night."], ["Top pains", "Can't fall asleep, mind racing at 2am, groggy mornings, melatonin hangover."]],
+  services: [["What you sell", "Done-for-you ads that book qualified appointments for HVAC companies."], ["The offer", "25 qualified booked appointments in 30 days or you don't pay. No ad spend."], ["Who buys it", "HVAC owners doing $1M to $10M a year who want more installs."], ["Top pains", "Slow seasons, shared leads sold to 5 companies, paying for clicks that never book."]],
+  saas: [["What you sell", "A team workspace that turns status meetings into 2-minute written updates."], ["The offer", "Free for 14 days, no card. $12 per user after."], ["Who buys it", "Ops leads and founders at teams of 10 to 200."], ["Top pains", "Too many meetings, nobody knows project status, info spread across 12 tools."]]
+};
+var FORMULA = {
+  ecom: [["Number outcome", "Asleep in 20 minutes"], ["Guarantee", "30 nights or your money back"], ["Urgency", "40% off ends Sunday"], ["End result", "Wake up clear and in a good mood"]],
+  saas: [["Number outcome", "6 hours of meetings back per week"], ["Guarantee", "Free 14 days, cancel anytime"], ["Urgency", "First month free ends Friday"], ["End result", "A team that knows what's happening without asking"]],
+  services: [["Number outcome", "25 qualified booked appointments in 30 days"], ["Guarantee", "Or you don't pay"], ["Urgency", "Exclusive: 1 HVAC company per city"], ["End result", "A full install calendar with no ad spend"]]
+};
+var LOOKS = {
+  ecom: ["Mix it up", "iPhone UGC", "Flash photo", "Studio product", "Bold graphic"],
+  saas: ["Mix it up", "Screenshot callouts", "Founder UGC", "Bold graphic", "Memes"],
+  services: ["Mix it up", "Owner UGC", "Flash photo", "Bold graphic", "Memes"]
+};
+var ANGLES = {
+  ecom: [
+    { name: "Pain", line: "Can't fall asleep. Mind racing at 2am.", tag: "Proven" },
+    { name: "Result", line: "Asleep in 20 minutes, wake up clear.", tag: "Proven" },
+    { name: "Us vs them", line: "Nimbus vs the melatonin hangover.", tag: "Proven" },
+    { name: "Enemy", line: "Your phone is stealing your sleep.", tag: "Try this" },
+    { name: "Cost of waiting", line: "Every bad night costs you tomorrow.", tag: "Try this" },
+    { name: "Identity", line: "For people who hate mornings.", tag: "" },
+    { name: "Contrarian", line: "Stop counting sheep. It doesn't work.", tag: "" },
+    { name: "Curiosity", line: "The 2 minute bedtime trick nobody talks about.", tag: "" },
+    { name: "Founder story", line: "Why I made these after 3 years of bad sleep.", tag: "" },
+    { name: "Gift", line: "The gift for the most tired person you know.", tag: "" }
+  ],
+  saas: [
+    { name: "Pain", line: "Your whole week is meetings.", tag: "Proven" },
+    { name: "Time saved", line: "Get 6 hours back every week.", tag: "Proven" },
+    { name: "Us vs them", line: "Flowdesk vs 12 spreadsheet tabs.", tag: "Proven" },
+    { name: "Enemy", line: "The status meeting is the problem.", tag: "Try this" },
+    { name: "Look good to the boss", line: "Know every project's status before your boss asks.", tag: "Try this" },
+    { name: "Identity", line: "For ops people who hold everything together.", tag: "" },
+    { name: "Contrarian", line: "Kill your standup.", tag: "" },
+    { name: "Cost of waiting", line: "Every status meeting burns hours you never get back.", tag: "" },
+    { name: "Curiosity", line: "The 2 minute update that replaced our meetings.", tag: "" },
+    { name: "Founder story", line: "I built this because I hated our Monday meeting.", tag: "" }
+  ],
+  services: [
+    { name: "Pain", line: "Slow season is killing your cash flow.", tag: "Proven" },
+    { name: "Result", line: "A full install calendar in 30 days.", tag: "Proven" },
+    { name: "Risk reversal", line: "You don't pay unless we deliver.", tag: "Proven" },
+    { name: "Enemy", line: "Lead sellers sell your lead to 5 other guys.", tag: "Try this" },
+    { name: "Scarcity", line: "Only 1 HVAC company per city.", tag: "Try this" },
+    { name: "Us vs them", line: "Booked appointments vs shared leads.", tag: "" },
+    { name: "Contrarian", line: "Stop buying leads.", tag: "" },
+    { name: "Cost of waiting", line: "Every empty day on the calendar is money lost.", tag: "" },
+    { name: "Identity", line: "For owners who'd rather run jobs than chase them.", tag: "" },
+    { name: "Founder story", line: "Why we only work with HVAC.", tag: "" }
+  ]
+};
+var PLANS = [
+  { name: "Starter", tag: "Solo brands", price: "$39", credits: "100", per: "$0.39", videos: "10" },
+  { name: "Growth", tag: "Brands and small agencies", price: "$99", credits: "300", per: "$0.33", videos: "30" },
+  { name: "Agency", tag: "Many clients", price: "$299", credits: "1,000", per: "$0.30", videos: "100" }
+];
+var SAMPLE_BRANDS = [
+  { id: 1, name: "Nimbus Sleep", url: "nimbussleep.com", type: "ecom" },
+  { id: 2, name: "Flowdesk", url: "flowdesk.io", type: "saas" },
+  { id: 3, name: "Signal Leads", url: "signalleads.co", type: "services" }
+];
+var TYPE_NAME = { ecom: "Ecommerce", saas: "Tech / SaaS", services: "Services / lead gen" };
+var STAGE_NAME = { cold: "Cold", warm: "Warm", hot: "Hot" };
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.timers = [];
+    this.idc = 1000;
+    this.state = {
+      screen: "create", mode: null, brands: [], brandId: null, credits: 240, plan: "Growth",
+      msgs: [{ id: 1, from: "ai", text: "hey! I'm your ad creative assistant\n\nI'll learn what you sell and make scroll-stopping ads for your whole funnel\n\nquick q: who's this account for?", tip: "account", opts: [{ label: "My own brand", key: "mode", arg: "brand" }, { label: "An agency (we run ads for clients)", key: "mode", arg: "agency" }] }],
+      recPlan: null, angleSel: [], customAngles: [],
+      await: null, draft: "", last: null, ads: [], tab: "cold", removed: {}, editId: null, artDrafts: {}, artBusy: false,
+      menu: false, meta: false, metaLoading: false, refreshed: {}, toast: ""
+    };
+  }
+  componentWillUnmount() { this.timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  say(msg) {
+    this.setState({ toast: msg });
+    if (this.toastT) clearTimeout(this.toastT);
+    this.toastT = setTimeout(() => this.setState({ toast: "" }), 2600);
+    this.timers.push(this.toastT);
+  }
+  brand() { return this.state.brands.find((b) => b.id === this.state.brandId) || null; }
+  push(list, extra) {
+    var msgs = this.state.msgs.map((m) => ({ ...m, done: true }));
+    list.forEach((m) => { msgs.push({ id: this.idc++, ...m }); });
+    this.setState({ msgs: msgs, ...(extra || {}) });
+  }
+  patchMsg(id, patch) { this.setState({ msgs: this.state.msgs.map((m) => m.id === id ? { ...m, ...patch } : m) }); }
+
+  act(o) {
+    var k = o.key, arg = o.arg;
+    if (k === "topup") { this.setState({ screen: "credits" }); return; }
+    this.push([{ from: "me", text: o.label }]);
+    this.later(() => this.step(k, arg), 350);
+  }
+  step(k, arg) {
+    var b = this.brand();
+    if (k === "mode") {
+      if (arg === "agency") {
+        this.setState({ mode: "agency", brands: SAMPLE_BRANDS.slice() });
+        this.push([{ from: "ai", text: "nice. how many clients are you making ads for?", opts: [{ label: "1 to 5", key: "clients", arg: "Growth" }, { label: "6 to 20", key: "clients", arg: "Agency" }, { label: "20+", key: "clients", arg: "Agency" }] }]);
+      } else {
+        this.setState({ mode: "brand", recPlan: "Starter" });
+        this.push([{ from: "ai", text: "love it. drop your website below and I'll figure out your offer\n\n(try nimbussleep.com, flowdesk.io or signalleads.co)" }], { await: "url" });
+      }
+    } else if (k === "clients") {
+      var pl = PLANS.find((x) => x.name === arg);
+      this.setState({ recPlan: arg });
+      this.push([{ from: "ai", text: "got it. the " + arg + " plan fits you best: " + pl.credits + " credits/mo for " + pl.price + "\n\neach client gets their own folder + brand voice, and you can send ads to them for approval" }]);
+      this.later(() => this.askBrand(), 600);
+    } else if (k === "brand") {
+      this.setState({ brandId: arg });
+      this.later(() => this.askFunnel(), 0);
+    } else if (k === "newbrand") {
+      this.push([{ from: "ai", text: "drop the client's website below" }], { await: "url" });
+    } else if (k === "offerOk") {
+      this.askFunnel();
+    } else if (k === "offerChange") {
+      this.push([{ from: "ai", text: "sure, what should I change?" }], { await: "change" });
+    } else if (k === "funnel") {
+      this.setState({ last: { counts: arg } });
+      this.askAngles(false);
+    } else if (k === "anglesAll") {
+      this.askAngles(true);
+    } else if (k === "anglesOk") {
+      if (!this.state.angleSel.length) { this.push([{ from: "ai", text: "pick at least one angle first" }]); return; }
+      this.setState({ await: null });
+      this.generate((this.state.last && this.state.last.counts) || { cold: 10, warm: 6, hot: 4 }, "Mix it up", "on it. writing hooks for " + this.state.angleSel.length + " angles across the funnel");
+    } else if (k === "look") {
+      this.generate((this.state.last && this.state.last.counts) || { cold: 10, warm: 6, hot: 4 }, arg);
+    } else if (k === "more") {
+      this.generate({ cold: 6, warm: 2, hot: 2 }, "Mix it up", "making 10 more w/ new hooks + scenes");
+    } else if (k === "funnier") {
+      this.generate({ cold: 4, warm: 0, hot: 0 }, "Funny", "say less. 4 funnier ones coming up", true);
+    } else if (k === "difflook") {
+      this.push([{ from: "ai", text: "which vibe?", opts: LOOKS[b.type].map((l) => ({ label: l, key: "look", arg: l })) }]);
+    } else if (k === "download") {
+      this.say("Downloaded " + this.keptCount() + " ads as a ZIP (mock)");
+      this.push([{ from: "ai", text: "downloaded! files are named by stage + style so they're easy to find in Ads Manager", opts: this.afterOpts() }]);
+    }
+  }
+  afterOpts() {
+    return [{ label: "Make 10 more · 10 credits", key: "more" }, { label: "Make them funnier", key: "funnier" }, { label: "Try new angles", key: "anglesAll" }, { label: "Different look", key: "difflook" }, { label: "Download kept ads", key: "download" }];
+  }
+  allAngles() {
+    var b = this.brand();
+    return ANGLES[b.type].concat(this.state.customAngles);
+  }
+  askAngles(all) {
+    var b = this.brand();
+    var list = this.allAngles();
+    if (all) {
+      this.push([{ from: "ai", text: "here's everything I found for " + b.name + ". tap to pick, or type your own below", tip: "angles", card: "angles", angles: list, opts: [{ label: "Use selected angles", key: "anglesOk" }] }], { await: "angle" });
+    } else {
+      var rec = list.slice(0, 5);
+      this.push([{ from: "ai", text: "which angles? I picked 3 that usually work for " + TYPE_NAME[b.type].toLowerCase() + " brands + 2 your competitors basically never use. tap to change", tip: "angles", card: "angles", angles: rec, opts: [{ label: "Use these · recommended", key: "anglesOk" }, { label: "Show all angles", key: "anglesAll" }] }], { angleSel: rec.map((x) => x.name), await: "angle" });
+    }
+  }
+  askBrand() {
+    var opts = this.state.brands.map((b) => ({ label: b.name, key: "brand", arg: b.id }));
+    opts.push({ label: "+ New client", key: "newbrand" });
+    this.push([{ from: "ai", text: "which client are we doing today?", opts: opts }]);
+  }
+  askFunnel() {
+    var b = this.brand();
+    this.push([{ from: "ai", text: "cool, making ads for " + b.name + " (" + TYPE_NAME[b.type] + ")\n\nwhich part of the funnel?", tip: "funnel", opts: [
+      { label: "Full Funnel Pack · 20 ads", key: "funnel", arg: { cold: 10, warm: 6, hot: 4 } },
+      { label: "Cold only · 10 ads", key: "funnel", arg: { cold: 10, warm: 0, hot: 0 } },
+      { label: "Warm only · 6 ads", key: "funnel", arg: { cold: 0, warm: 6, hot: 0 } },
+      { label: "Hot only · 4 ads", key: "funnel", arg: { cold: 0, warm: 0, hot: 4 } }
+    ] }]);
+  }
+  nameFrom(url) {
+    var host = url.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
+    var core = host.split(".")[0] || "New brand";
+    return core.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  }
+  readUrl(url) {
+    url = url.trim().replace(/^https?:\/\//, "").replace(/\/$/, "") || "yourbrand.com";
+    var type = /(lead|agency|market|media|hvac|roof|plumb|law|dental|clinic|service)/i.test(url) ? "services" : /(\.io|\.ai|\.app|app|soft|flow|desk|cloud|hq)/i.test(url) ? "saas" : "ecom";
+    var pid = this.idc + 1;
+    this.push([{ from: "me", text: url }, { from: "ai", text: "checking out " + url + "...", card: "progress", title: "Learning your offer", pct: 0, sub: "Reading your website" }], { await: null, draft: "" });
+    var subs = ["Reading your website", "Finding the offer and price", "Finding who buys it and why", "Pulling real reviews"];
+    [1, 2, 3, 4].forEach((n) => this.later(() => this.patchMsg(pid, { pct: n * 25, sub: subs[Math.min(3, n)] }), n * 700));
+    this.later(() => {
+      this.patchMsg(pid, { pct: 100, sub: "Done" });
+      var nb = { id: this.idc++, name: this.nameFrom(url), url: url, type: type };
+      this.setState({ brands: this.state.brands.concat([nb]), brandId: nb.id });
+      this.later(() => this.push([{ from: "ai", text: "ok here's what I got. every ad uses this so lmk if anything's off", card: "offer", brandName: nb.name, brandType: TYPE_NAME[type], fields: OFFERS[type].map((f) => ({ label: f[0], value: f[1] })), formula: FORMULA[type].map((f) => ({ label: f[0], value: f[1] })), opts: [{ label: "Looks good", key: "offerOk" }, { label: "Change something", key: "offerChange" }] }]), 0);
+    }, 3200);
+  }
+  keptCount() { var r = this.state.removed; return this.state.ads.filter((x) => !r[x.id]).length; }
+  build(counts, look, funny) {
+    var b = this.brand();
+    var base = ADS[b.type];
+    var out = [];
+    var seed = this.state.ads.length;
+    ["cold", "warm", "hot"].forEach((st) => {
+      var pool = base.filter((x) => x.stage === st && (!funny || x.tpl === "meme" || x.tpl === "tweet" || x.tpl === "notes"));
+      for (var i = 0; i < counts[st]; i++) {
+        var src = pool[(i + seed) % pool.length];
+        var sel = this.state.angleSel.length ? this.state.angleSel : ["Pain"];
+        var ad = { ...src, id: this.idc++, brandId: b.id, look: look, history: [], angle: sel[(out.length + seed) % sel.length] };
+        if (seed > 0 && (src.tpl === "photo" || src.tpl === "graphic")) ad.a = HEADLINES[b.type][(i + seed) % 5];
+        out.push(ad);
+      }
+    });
+    return out;
+  }
+  generate(counts, look, intro, funny) {
+    var b = this.brand();
+    var n = counts.cold + counts.warm + counts.hot;
+    if (this.state.credits < n) {
+      this.push([{ from: "ai", text: "that's " + n + " credits and you've got " + this.state.credits + ". wanna top up?", opts: [{ label: "Top up credits", key: "topup" }] }]);
+      return;
+    }
+    var pid = this.idc;
+    this.push([{ from: "ai", text: intro || ("on it. going for " + look.toLowerCase()), card: "progress", title: "Making " + n + " ads for " + b.name, pct: 0, sub: "Writing hooks from your offer" }], { credits: this.state.credits - n });
+    var pct = 0;
+    var iv = setInterval(() => {
+      pct += 5;
+      var sub = pct < 25 ? "Writing hooks from your offer" : pct < 55 ? "Generating images (4 versions each)" : pct < 80 ? "Picking the best version of each" : "Making text editable";
+      if (pct >= 100) {
+        clearInterval(iv);
+        var ads = this.build(counts, look, funny);
+        var first = ads.find((x) => x.stage === "cold") ? "cold" : ads.find((x) => x.stage === "warm") ? "warm" : "hot";
+        this.patchMsg(pid, { pct: 100, sub: "Done" });
+        this.setState({ ads: this.state.ads.concat(ads), tab: first });
+        this.later(() => this.push([{ from: "ai", text: "done! " + n + " ads are in your gallery\n\nI made 4 versions of each and kept the best one. tap any ad to change the text", card: "ads", adIds: ads.slice(0, 4).map((x) => x.id), opts: this.afterOpts() }]), 0);
+      } else {
+        this.patchMsg(pid, { pct: pct, sub: sub });
+      }
+    }, 130);
+    this.timers.push(iv);
+  }
+  send() {
+    var text = (this.state.draft || "").trim();
+    var w = this.state.await;
+    if (w === "url") { this.readUrl(text); return; }
+    if (!text) return;
+    if (w === "angle") {
+      var ca = { name: text, line: "Your own angle.", tag: "Custom" };
+      this.setState({ customAngles: this.state.customAngles.concat([ca]), angleSel: this.state.angleSel.concat([text]) });
+      this.push([{ from: "me", text: text }], { draft: "" });
+      this.later(() => this.push([{ from: "ai", text: "added \"" + text + "\". I'll write hooks for it", card: "angles", angles: this.allAngles(), opts: [{ label: "Use selected angles", key: "anglesOk" }] }]), 400);
+      return;
+    }
+    if (w === "change") {
+      this.push([{ from: "me", text: text }], { draft: "", await: null });
+      this.later(() => this.push([{ from: "ai", text: "done. anything else?", opts: [{ label: "Looks good", key: "offerOk" }, { label: "Change something", key: "offerChange" }] }]), 500);
+      return;
+    }
+    this.push([{ from: "me", text: text }], { draft: "" });
+    if (!this.brand()) {
+      this.later(() => this.push([{ from: "ai", text: "tap one of the options above to get started" }]), 400);
+      return;
+    }
+    if (!this.state.ads.length) {
+      this.later(() => this.push([{ from: "ai", text: "got it, I'll use that. tap an option above to keep going" }]), 400);
+      return;
+    }
+    this.later(() => this.generate({ cold: 4, warm: 0, hot: 0 }, "Custom", "on it: \"" + text + "\". making 4 new versions"), 400);
+  }
+  updateAd(id, patch, saveHistory) {
+    this.setState({ ads: this.state.ads.map((x) => {
+      if (x.id !== id) return x;
+      var h = saveHistory ? x.history.concat([{ a: x.a, b: x.b, c: x.c }]) : x.history;
+      return { ...x, ...patch, history: h };
+    }) });
+  }
+  moreLikeThis() {
+    if (this.state.credits < 3) { this.say("Not enough credits"); return; }
+    var id = this.state.editId;
+    var idx = this.state.ads.findIndex((x) => x.id === id);
+    var src = this.state.ads[idx];
+    var b = this.brand();
+    var extra = [0, 1, 2].map((k) => {
+      var v = { ...src, id: this.idc++, history: [] };
+      if (src.tpl !== "art") v.a = HEADLINES[b.type][(idx + k) % 5];
+      if (src.tpl === "meme") v.a = v.a.toUpperCase();
+      return v;
+    });
+    var ads = this.state.ads.slice(0, idx + 1).concat(extra, this.state.ads.slice(idx + 1));
+    this.setState({ ads: ads, credits: this.state.credits - 3, editId: null });
+    this.say("3 new versions added next to it");
+  }
+  layersFor(ad) {
+    var names = {
+      meme: ["Top text", "Bottom text"], tweet: ["Post text", "Handle"], notes: ["Note text"], review: ["Quote", "Name"],
+      vs: ["Left label", "Right label"], list: ["Title"], shots: ["Callout 1", "Callout 2"], art: ["Text in the image"],
+      photo: ["Headline", "Button"], graphic: ["Headline", "Button"], formula: ["Outcome", "Guarantee", "Urgency + result"]
+    }[ad.tpl];
+    var out = [];
+    var drafts = this.state.artDrafts;
+    ["a", "b", "c"].forEach((f, i) => {
+      if (!names[i] || (f !== "a" && !ad[f])) return;
+      var art = ad.tpl === "art";
+      var val = art && drafts[ad.id] !== undefined ? drafts[ad.id] : ad[f];
+      out.push({
+        id: "layer_" + f, label: names[i], value: val, isArt: art,
+        badge: art ? "In the image · AI edit" : "Text layer · instant, free",
+        badgeStyle: "font-size: 12px; padding: 3px 8px; border-radius: 10px; " + (art ? "background: #0A0A0A; color: #FFFFFF" : "border: 1px solid #D4D4D4; color: #404040"),
+        onChange: (e) => {
+          if (art) this.setState({ artDrafts: { ...drafts, [ad.id]: e.target.value } });
+          else this.updateAd(ad.id, { [f]: e.target.value }, false);
+        },
+        apply: () => {
+          if (this.state.artBusy) return;
+          if (this.state.credits < 1) { this.say("Not enough credits"); return; }
+          var v = drafts[ad.id];
+          if (v === undefined || v === ad.a) { this.say("Change the text first"); return; }
+          this.setState({ artBusy: true, credits: this.state.credits - 1 });
+          this.later(() => {
+            this.updateAd(ad.id, { a: v }, true);
+            var d = { ...this.state.artDrafts }; delete d[ad.id];
+            this.setState({ artBusy: false, artDrafts: d });
+            this.say("Image updated. Text checked for typos.");
+          }, 1800);
+        }
+      });
+    });
+    return out;
+  }
+  renderVals() {
+    var s = this.state;
+    var scr = s.screen;
+    var b = this.brand();
+    var navDefs = [{ label: "Create", key: "create" }, { label: "Results", key: "results" }];
+    var nav = navDefs.map((n) => ({
+      label: n.label, go: () => this.setState({ screen: n.key, menu: false }),
+      style: "height: 100%; box-sizing: border-box; display: flex; align-items: center; padding: 0; border: none; background: none; font-size: 14px; cursor: pointer; border-bottom: 2px solid " + (scr === n.key ? "#0A0A0A; font-weight: 600; color: #0A0A0A" : "transparent; color: #5E5E5E")
+    }));
+
+    var lastWithOpts = null;
+    s.msgs.forEach((m) => { if (m.opts && !m.done) lastWithOpts = m.id; });
+    var chat = s.msgs.map((m) => {
+      var thumbs = (m.adIds || []).map((id) => s.ads.find((x) => x.id === id)).filter(Boolean).map((ad) => ({ ad: ad, open: () => this.setState({ editId: ad.id }) }));
+      return {
+        isAi: m.from === "ai", isMe: m.from === "me", text: m.text,
+        isOffer: m.card === "offer", isProgress: m.card === "progress", isAds: m.card === "ads", isAngles: m.card === "angles",
+        hasTip: !!m.tip, tip: m.tip || "funnel",
+        angleRows: (m.angles || []).map((ag) => {
+          var live = m.id === lastWithOpts;
+          var on = s.angleSel.indexOf(ag.name) >= 0;
+          return {
+            name: ag.name, line: ag.line, tag: ag.tag, hasTag: !!ag.tag, pressed: on ? "true" : "false",
+            mark: on ? "✓" : "",
+            style: "display: flex; gap: 12px; align-items: center; padding: 10px 8px; border: none; border-radius: 6px; background: " + (on && live ? "#F4F4F4" : "#FFFFFF") + "; cursor: " + (live ? "pointer" : "default") + "; color: #0A0A0A; width: 100%; opacity: " + (live || on ? "1" : "0.5"),
+            box: "width: 20px; height: 20px; flex-shrink: 0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-sizing: border-box; " + (on ? "background: #0A0A0A; color: #FFFFFF" : "border: 1px solid #BDBDBD"),
+            tagStyle: "font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; flex-shrink: 0; " + (ag.tag === "Try this" ? "background: #0A0A0A; color: #FFFFFF" : "border: 1px solid #D4D4D4; color: #404040"),
+            toggle: () => {
+              if (!live) return;
+              var cur = this.state.angleSel;
+              this.setState({ angleSel: cur.indexOf(ag.name) >= 0 ? cur.filter((x) => x !== ag.name) : cur.concat([ag.name]) });
+            }
+          };
+        }),
+        brandName: m.brandName, brandType: m.brandType, fields: m.fields || [], formula: m.formula || [],
+        title: m.title, sub: m.sub, bar: "height: 100%; background: #0A0A0A; transition: width 0.3s; width: " + (m.pct || 0) + "%",
+        thumbs: thumbs,
+        showOpts: !!m.opts && m.id === lastWithOpts,
+        opts: (m.opts || []).map((o) => ({ label: o.label, pick: () => this.act(o) }))
+      };
+    });
+
+    var removed = s.removed;
+    var counts = { cold: 0, warm: 0, hot: 0 };
+    s.ads.forEach((x) => { counts[x.stage]++; });
+    var tabAds = s.ads.filter((x) => x.stage === s.tab).map((x) => {
+      var gone = !!removed[x.id];
+      return {
+        label: x.kind, angleLabel: x.angle ? "Angle: " + x.angle : "", data: x,
+        tileStyle: "display: block; padding: 0; width: 180px; height: 225px; border: 1px solid #E5E5E5; border-radius: 8px; overflow: hidden; cursor: pointer; background: #FFFFFF; opacity: " + (gone ? "0.25" : "1"),
+        btn: gone ? "Undo" : "Remove",
+        open: () => this.setState({ editId: x.id }),
+        toggle: () => this.setState({ removed: { ...removed, [x.id]: !gone } })
+      };
+    });
+    var tabs = ["cold", "warm", "hot"].map((k) => ({
+      label: STAGE_NAME[k] + " (" + counts[k] + ")",
+      pick: () => this.setState({ tab: k }),
+      style: "height: 44px; padding: 0; border: none; background: none; font-size: 14px; cursor: pointer; border-bottom: 2px solid " + (s.tab === k ? "#0A0A0A; font-weight: 600; color: #0A0A0A" : "transparent; color: #5E5E5E")
+    }));
+    var hints = { cold: "Cold: stop the scroll", warm: "Warm: prove it works", hot: "Hot: close the sale" };
+
+    var ed = s.ads.find((x) => x.id === s.editId);
+    var edit = ed ? { data: ed, meta: STAGE_NAME[ed.stage] + " · " + ed.kind + (ed.angle ? " · Angle: " + ed.angle : ""), layers: this.layersFor(ed) } : { data: null, meta: "", layers: [] };
+    var canUndo = ed && ed.history && ed.history.length > 0;
+
+    var winnerAds = ADS.ecom;
+    var winners = [
+      { stage: "Cold", kind: "Notes app", m1: "Hook rate 41%", m2: "Cost per purchase $18", ad: winnerAds[3] },
+      { stage: "Warm", kind: "Review", m1: "CTR 2.4%", m2: "Cost per purchase $22", ad: winnerAds[10] },
+      { stage: "Hot", kind: "Offer", m1: "CTR 3.1%", m2: "Cost per purchase $11", ad: winnerAds[16] }
+    ];
+    var tiredDefs = [["Meme: ME AT 2AM", "Frequency 3.6"], ["Tweet: human right", "CTR down 22%"], ["Us vs them: melatonin", "Cost per purchase up 31%"]];
+    var tired = tiredDefs.map((t, i) => ({
+      name: t[0], why: t[1], btn: s.refreshed[i] ? "Queued" : "Refresh",
+      refresh: () => {
+        if (s.refreshed[i]) return;
+        if (s.credits < 3) { this.say("Not enough credits"); return; }
+        this.setState({ refreshed: { ...s.refreshed, [i]: true }, credits: s.credits - 3 });
+        this.say("3 fresh versions queued (mock)");
+      }
+    }));
+    var plans = PLANS.map((p) => {
+      var cur = s.plan === p.name;
+      return {
+        ...p, tag: cur ? "Current plan" : s.recPlan === p.name ? "Recommended for you" : p.tag, cta: cur ? "Current plan" : "Switch to " + p.name,
+        tagStyle: "font-size: 12px; " + (!cur && s.recPlan === p.name ? "font-weight: 600; background: #0A0A0A; color: #FFFFFF; padding: 3px 8px; border-radius: 10px" : "color: #5E5E5E"),
+        box: "border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 20px; border: 1px solid " + (cur ? "#0A0A0A" : "#E5E5E5"),
+        btn: "height: 44px; border-radius: 6px; font-size: 14px; cursor: pointer; " + (cur ? "border: 1px solid #D4D4D4; background: #F7F7F7; color: #5E5E5E" : "border: none; background: #0A0A0A; color: #FFFFFF; font-weight: 600"),
+        choose: () => { if (!cur) { this.setState({ plan: p.name }); this.say("Switched to " + p.name + " (mock)"); } }
+      };
+    });
+
+    return {
+      yes: true,
+      is: { create: scr === "create", results: scr === "results", credits: scr === "credits" },
+      nav: nav, credits: s.credits,
+      showSwitcher: s.mode === "agency", brandLabel: b ? b.name : "Pick a client", menuOpen: s.menu,
+      toggleMenu: () => this.setState({ menu: !s.menu }),
+      menuBrands: s.brands.map((mb) => ({ name: mb.name, type: TYPE_NAME[mb.type], pick: () => { this.setState({ menu: false, brandId: mb.id, screen: "create" }); this.later(() => this.push([{ from: "ai", text: "switched to " + mb.name }]), 0); this.later(() => this.askFunnel(), 50); } })),
+      menuNew: () => { this.setState({ menu: false, screen: "create" }); this.push([{ from: "ai", text: "drop the new client's website below" }], { await: "url" }); },
+      goCredits: () => this.setState({ screen: "credits", menu: false }),
+      accountMenu: () => this.say("Account, team and settings (mock)"),
+      chat: chat,
+      draft: s.draft, onDraft: (e) => this.setState({ draft: e.target.value }),
+      onKey: (e) => { if (e.key === "Enter") this.send(); },
+      send: () => this.send(),
+      isAgency: s.mode === "agency",
+      share: () => { if (!s.ads.length) { this.say("No ads yet"); return; } this.say("Approval link copied (mock). Your client can approve or comment on each ad."); },
+      composerHint: s.await === "angle" ? "Type your own angle, e.g. \"jealous of friends who sleep well\"" : s.await === "url" ? "Paste website URL, e.g. nimbussleep.com" : s.await === "change" ? "What should I change?" : "Ask for anything, e.g. \"make them funnier\"",
+      galleryEmpty: s.ads.length === 0,
+      galleryHint: b ? b.name + " · " + s.ads.length + " ads · click any ad to edit" : "No ads yet",
+      kept: this.keptCount(), tabs: tabs, tabAds: tabAds, tabHint: hints[s.tab],
+      download: () => { if (!s.ads.length) { this.say("No ads yet"); return; } this.say("Downloaded " + this.keptCount() + " ads as a ZIP (mock)"); },
+      editing: !!ed, edit: edit, artBusy: s.artBusy,
+      closeEdit: () => this.setState({ editId: null }),
+      newHeadline: () => {
+        if (!ed) return;
+        if (ed.tpl === "art") { this.say("This text is part of the image. Edit it above."); return; }
+        var list = HEADLINES[b ? b.type : "ecom"];
+        var cur = list.indexOf(ed.a);
+        var next = list[(cur + 1) % list.length];
+        if (ed.tpl === "meme") next = next.toUpperCase();
+        this.updateAd(ed.id, { a: next }, true);
+      },
+      undo: () => { if (!canUndo) return; var h = ed.history; var prev = h[h.length - 1]; this.setState({ ads: s.ads.map((x) => x.id === ed.id ? { ...x, a: prev.a, b: prev.b, c: prev.c, history: h.slice(0, -1) } : x) }); },
+      undoStyle: "height: 44px; border: 1px solid #D4D4D4; border-radius: 6px; background: #FFFFFF; font-size: 14px; cursor: pointer; color: " + (canUndo ? "#0A0A0A" : "#A3A3A3"),
+      moreLikeThis: () => this.moreLikeThis(),
+      metaOn: s.meta, metaOff: !s.meta, metaBtn: s.metaLoading ? "Connecting..." : "Connect Meta",
+      connectMeta: () => { if (s.metaLoading) return; this.setState({ metaLoading: true }); this.later(() => { this.setState({ meta: true, metaLoading: false }); this.say("Meta connected (mock)"); }, 1500); },
+      winners: winners, tired: tired,
+      parts: [
+        { part: "Angle", value: "Can't turn my brain off", metric: "$16 / purchase" },
+        { part: "Style", value: "Notes app", metric: "41% hook rate" },
+        { part: "Hook", value: "\"things that fixed my...\"", metric: "38% hook rate" },
+        { part: "Offer", value: "40% off first bottle", metric: "$11 / purchase" }
+      ],
+      moreLikeWinners: () => {
+        var st = { screen: "create" };
+        var brands = s.brands;
+        if (!brands.find((x) => x.id === 1)) { brands = brands.concat([SAMPLE_BRANDS[0]]); st.brands = brands; }
+        st.brandId = 1;
+        if (!s.mode) st.mode = "agency";
+        this.setState(st);
+        this.later(() => this.generate({ cold: 6, warm: 2, hot: 2 }, "Winners", "using your winners: Notes app style + the \"can't turn my brain off\" angle. making 10 new ones that keep what works and switch up the rest"), 50);
+      },
+      plans: plans, topUp: () => { this.setState({ credits: s.credits + 100 }); this.say("100 credits added (mock)"); },
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
