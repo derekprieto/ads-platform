@@ -69,6 +69,17 @@ Two kinds of text, same click for the user:
 
 Copy swaps reuse the same image, so "5 new headlines" is fast and cheap.
 
+## 2e. Angles, onboarding, tooltips
+
+- **Angles** (the reason someone buys) are a chat step after the funnel choice. The app
+  picks 5 by default: 3 "Proven" for the business type + 2 "Try this" angles
+  competitors rarely use. Users can tap to change, see all ~10, or type their own.
+  Every ad is tagged with its angle so Results can show which angle wins.
+- **Onboarding** asks "My own brand" or "An agency". Agencies also answer "How many
+  clients?" which sets the recommended plan (1-5: Growth, 6+: Agency) and turns on
+  client folders, the client switcher and "Share with client" approval links.
+- **Tooltips**: every section heading has an (i) with a short line and a small diagram.
+
 ## 3. The two rules for the output
 
 1. **The software is deterministic.** The same inputs always follow the same recipe:
