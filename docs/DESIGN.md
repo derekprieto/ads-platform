@@ -18,7 +18,7 @@ Black and white. Clean. Modeled on Atlassian's design foundations.
   - Border: `#E5E5E5`.
   - Primary button: black background, white text.
   - Error only: red `#D92D20`. No other colors.
-- **Font:** Inter. Sizes 12 / 14 / 16 / 20 / 24 / 32. Weights 400 and 600 only.
+- **Font:** Geist (clean, modern, free on Google Fonts). Sizes 12 / 14 / 16 / 20 / 24 / 32. Weights 400 and 600 only.
 - **Radius:** 6px for buttons and inputs, 8px for cards.
 - **Shadows:** none, borders only.
 - **Dark mode:** same tokens inverted (later, not Phase 1).

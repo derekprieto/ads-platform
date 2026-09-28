@@ -2,6 +2,13 @@
 
 Each entry: decision, why, evidence. Newest first.
 
+## 2026-09-28 (v3): Credit-based pricing replaces flat per-brand price
+- 1 image ad = 1 credit, 1 video ad = 10 credits. Plans $39 / $99 / $299 for
+  100 / 300 / 1,000 credits. 20 free credits on signup.
+- **Why:** Revenue scales with usage, small first purchase, same model users know from
+  Arcads and Higgsfield. Brands are unlimited so agencies never hit a wall.
+- Supersedes the v2 "$97 per brand" entry.
+
 ## 2026-09-28 (v2): Simplicity rules
 - One page, one job, one main button. 5 pages total. No timelines: phases run back to back.
 - No open prompt box. Users never pick styles; the Funnel Pack does.

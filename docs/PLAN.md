@@ -1,6 +1,6 @@
 # Master Plan
 
-Status: v2, 2026-09-28. Owner: head of engineering. Approver: CEO.
+Status: v3, 2026-09-28. Owner: head of engineering. Approver: CEO.
 
 **Rule #1: Simplicity scales.** One job per page. One main button per page.
 If a feature adds a choice the user must make, it needs a very good reason.
@@ -52,6 +52,8 @@ exactly which part won.
 | 4. **Review** | Keep or delete each ad. Click text to edit. | "Download kept ads" |
 | 5. **Results** (Phase 2) | See winners by stage, angle, hook | "Make more like winners" |
 
+UX mockup (clickable): https://claude.ai/artifact/41dsaverMc8NmP2Kido5BZ
+
 That is the whole app. Nav: Brands, Make, Results. Settings live in one menu.
 
 ## 6. How the ads stay native, not slop
@@ -80,22 +82,28 @@ That is the whole app. Nav: Brands, Make, Results. Settings live in one menu.
 
 **Later:** push ads straight to Meta, weekly auto-pack from last week's winners.
 
-## 8. Pricing
+## 8. Pricing (usage based, credits)
 
-Goal: a no-brainer for performance marketers and agencies.
+We charge for what people make, like Arcads and Higgsfield. Revenue grows in a
+straight line with each client's usage, and the first purchase is small.
 
-**One plan: $97 per brand per month.**
-- Unlimited image ads (fair use).
-- Video (Phase 3) uses credits, sold at a small markup over cost.
-- 7-day free trial, cancel anytime.
+- **1 image ad = 1 credit. 1 video ad = 10 credits.**
+- **20 free credits on signup** = one full Funnel Pack. They see results before paying.
 
-Why this price:
-- A creative hire costs $4K to $6K/month. Arcads costs ~$110/month for 10 videos.
-- Our cost per image ad is well under $1 (image models $0.01 to $0.15 each).
-- Per-brand pricing grows with agencies naturally: 10 clients = $970/month, still tiny
-  vs. one hire. One plan = no pricing page confusion.
-- Video on Higgsfield costs about $0.10 per second (about $1.50 for a 15s ad), so video
-  is credits, not unlimited, to protect margin.
+| Plan | Price/mo | Credits/mo | Cost per image ad |
+|---|---|---|---|
+| Starter | $39 | 100 | $0.39 |
+| Growth | $99 | 300 | $0.33 |
+| Agency | $299 | 1,000 | $0.30 |
+
+- Top up anytime: 100 credits for $40. Unused credits roll over while subscribed.
+- Unlimited brands and team members on every plan. Usage is the only thing we meter.
+
+Why these numbers:
+- Our cost per image ad is about $0.05 to $0.15 (image model + copy). Margin 60 to 85%.
+- Our cost per 15s video is about $1.50 (Higgsfield ~$0.10/second). At 10 credits
+  ($3 to $3.90) margin is about 50 to 60%. Arcads charges ~$11 per video.
+- A creative hire is $4K to $6K/month. 1,000 ads on our top plan is $299.
 
 ## 9. Tech stack (minimal)
 
