@@ -2,6 +2,11 @@
 
 Each entry: decision, why, evidence. Newest first.
 
+## 2026-09-28 (v5): AI designs the whole ad, then we split it into editable layers
+- Generate full ad with text, OCR it, inpaint text away, re-add as matched layers.
+- Text that is part of the art stays in the image; edits use AI region editing (1 credit).
+- **Why:** Best look (AI designs text into the image) plus easy copy changes.
+
 ## 2026-09-28 (v4): For agencies and brands, all AI images, guided chat
 - One app for agencies and in-house brands (ecommerce, SaaS, services, info). Signup
   asks "Brand or agency?" to set defaults only. Offer Brain detects business type.

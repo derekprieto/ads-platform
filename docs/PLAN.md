@@ -43,11 +43,31 @@ The Offer Brain detects the **business type** from the website and picks matchin
 - Every image ad is fully AI generated from our style recipes (camera, light,
   realism rules), the user's real product photo, and winning-ad references.
 - Best of 4: we generate 4 versions, an AI judge scores them, user sees the best one.
-- Exact text (prices, offers, screenshot UIs) stays an editable layer.
+- All text becomes editable (see 2d).
 - Main screen = **guided chat + gallery**. The assistant asks one question at a time
   with clickable options. Ads appear in the chat. Users can type edits ("funnier").
   Under the hood it runs the same fixed steps.
 - Before building: blind test of the top 3 image models with our media buyers.
+
+## 2d. Editing text on AI images
+
+Every ad is saved as **image + text layers**, so copy is always editable.
+
+Pipeline per ad:
+1. AI generates the full ad, text included (best overall design).
+2. We read the text and its position (OCR/vision model).
+3. We erase the text from the image (inpainting) to get a clean image.
+4. We put the text back as editable layers, matching font (from ~30 curated fonts),
+   color, size, stroke and angle.
+
+Two kinds of text, same click for the user:
+- **Layer text** (headlines, captions, offers, prices): edit instantly, free.
+- **Art text** (text that is part of the picture: neon sign, handwriting, 3D letters,
+  text on a shirt or package): recipe marks it "keep in image". Editing it runs an AI
+  image edit on just that area ("change X to Y, same style"), about 10 seconds,
+  1 credit, auto-checked for typos, old version kept for undo.
+
+Copy swaps reuse the same image, so "5 new headlines" is fast and cheap.
 
 ## 3. The two rules for the output
 
