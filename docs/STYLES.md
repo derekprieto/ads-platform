@@ -1,53 +1,47 @@
-# Style Formula Library
+# Style Library
 
-A **style** is a tested recipe, not a prompt. Each one defines:
+A style is a fixed recipe: **slots** (text pieces) + **layout** (rendered by us) +
+**scene** (what the image model makes). The user never picks styles by hand.
+The Funnel Pack picks them per stage. Look = social feed, not corporate.
 
-- **Slots**: the pieces of copy it needs (hook, proof, CTA, etc.)
-- **Layout**: where text, product and image sit (rendered by our engine, not the AI)
-- **Visual direction**: what photo/scene the image model makes
-- **Rules**: what makes this style work, and what breaks it
-- **Best for**: which angles and funnel stage it fits
+## Cold: stop the scroll
 
-Users pick a style. The app fills slots from the Offer Brain and chosen angle.
+| Style | What it is |
+|---|---|
+| Meme | Known meme layout, top/bottom text, about the customer's pain |
+| POV post | "POV: you just..." text over a lo-fi phone photo |
+| Tweet screenshot | Fake-native X post (fictional handle), hot take about the problem |
+| Notes app | iPhone Notes screenshot, raw honest text |
+| Bold claim | Big ugly text on plain color. One shocking line. |
+| Lo-fi caption photo | Phone-quality photo of a real-looking scene + Instagram story text |
 
-## Static styles (Phase 1)
+## Warm: prove it
 
-| # | Style | Slots | Visual | Best for |
-|---|---|---|---|---|
-| 1 | Us vs Them | 2 columns of 3 to 5 contrasts, CTA | Product vs generic alternative | Comparison, switching |
-| 2 | Testimonial / review card | Star rating, quote, name, product | Real product in lifestyle scene | Proof, cold traffic |
-| 3 | Headline + product hero | Big hook, sub line, CTA | Clean product shot, brand color | Simple offers, retargeting |
-| 4 | Notes app / text message screenshot | Native-looking note or chat | UI mock rendered by our engine | Pattern interrupt, story |
-| 5 | Before / After | Before label, after label, result | Split image | Transformation offers |
-| 6 | Feature callouts | Product in center, 3 to 5 arrows with benefits | Product cutout | Physical products |
-| 7 | Big stat | One number + meaning + source | Minimal background | Credibility, B2B |
-| 8 | Listicle | "X reasons why...", numbered list | Product or person | Education, objections |
-| 9 | Problem → Solution | Pain line, fix line | Frustrated scene → product | Pain angles |
-| 10 | Offer stack | Items + value + price + guarantee | Product bundle | Direct response, sales |
-| 11 | Press / "As seen in" | Quote + publication logos (user supplied only) | Product | Authority |
-| 12 | UGC-style photo + caption | Short casual caption | Phone-camera photo of person with product | Relatability |
-| 13 | Social post screenshot | Post text, handle, likes | Rendered post UI (fictional handle unless user supplies real one) | Native feel |
-| 14 | Objection handler / FAQ | Question, answer | Product or person | Mid funnel |
-| 15 | Founder story | Short first-person story, face | Founder photo (user supplied) | Trust, brand |
+| Style | What it is |
+|---|---|
+| Review screenshot | Real customer review in a native review/comment look |
+| Before / after | Split image, 2 short labels |
+| Us vs them | Two columns, checkmarks vs X's |
+| Listicle | "3 reasons people switch to X" |
+| Founder note | Short first-person note, founder photo if provided |
 
-## Video styles (Phase 3)
+## Hot: close it
 
-| # | Style | Built from |
-|---|---|---|
-| V1 | Text-on-screen over B-roll | Product clips + captions |
-| V2 | Slideshow / carousel video | Static styles animated |
-| V3 | Voiceover demo | Product clips + AI voice + captions |
-| V4 | UGC talking head | Licensed AI actor + script |
-| V5 | Green screen reaction | Actor over screenshot/ad/article |
-| V6 | Street interview / podcast clip style | Actor(s) + setting |
-| V7 | Generated hook scene | 3 to 5 sec AI scene + any style above |
+| Style | What it is |
+|---|---|
+| Offer on color | Plain colored background, offer in 5 to 10 words, CTA |
+| Guarantee | Risk reversal front and center |
+| Urgency | Deadline or limited spots, only if true |
+| Objection answer | "Worried about X? Here's the truth." |
 
-## Rules applied to every style
+## Video (Phase 3, via Higgsfield)
 
-- No text inside AI images. All text is a rendered layer.
-- Real product photo must be used when a product is shown.
-- No fake reviews: review text comes from the user's real reviews or is flagged as a
-  draft the user must confirm.
-- Photo direction default: phone camera, natural light, real homes/streets, slight
-  imperfection. Never cartoon or 3D render unless the user asks.
-- Each batch spreads across different styles and visuals so Meta sees real variety.
+UGC talking head, street interview, review, meme/skit, trending format.
+
+## Rules for every style
+
+- Text is rendered by us, never drawn by the AI.
+- Real product photo when the product is shown.
+- Reviews come from the user's real reviews, never invented.
+- Default look: phone camera, native fonts, imperfect. Never cartoon or glossy 3D.
+- Each pack spreads across different styles so Meta sees real variety.
