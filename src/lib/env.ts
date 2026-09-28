@@ -8,5 +8,5 @@ export const env = {
   /** Force mock providers even when keys exist (tests). */
   forceMock: process.env.PROVIDERS === "mock",
 };
-export const useRealLLM = () => !!env.anthropicKey && !env.forceMock;
-export const useRealImages = () => !!env.falKey && !env.forceMock;
+export const realLLM = () => !!env.anthropicKey && !env.forceMock;
+export const realImages = () => !!env.falKey && !env.forceMock;

@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Native / node-only packages must not be bundled.
+  serverExternalPackages: ["@resvg/resvg-js", "satori", "postgres", "jszip", "cheerio"],
 };
 
 export default nextConfig;

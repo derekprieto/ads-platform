@@ -1,4 +1,4 @@
-import { useRealImages, useRealLLM } from "../env";
+import { realImages, realLLM } from "../env";
 import { anthropicLLM } from "./anthropic";
 import { falImages } from "./fal";
 import { mockImages } from "./mock";
@@ -8,7 +8,7 @@ export { ProviderError };
 
 /** Primary + fallback image model. Swap ids after the blind test. */
 export function imageProviders(): ImageGen[] {
-  if (!useRealImages()) return [mockImages()];
+  if (!realImages()) return [mockImages()];
   return [
     falImages(process.env.IMAGE_MODEL ?? "fal-ai/nano-banana-pro", process.env.IMAGE_EDIT_MODEL ?? "fal-ai/nano-banana-pro/edit", 15),
     falImages(process.env.IMAGE_FALLBACK_MODEL ?? "fal-ai/bytedance/seedream/v4/text-to-image", process.env.IMAGE_FALLBACK_EDIT_MODEL ?? "fal-ai/bytedance/seedream/v4/edit", 4),
@@ -16,7 +16,7 @@ export function imageProviders(): ImageGen[] {
 }
 
 export function llm(): LLM | null {
-  return useRealLLM() ? anthropicLLM() : null;
+  return realLLM() ? anthropicLLM() : null;
 }
 
 /** Try each provider in order. Non-retryable errors on one still move to the next. */

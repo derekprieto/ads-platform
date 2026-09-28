@@ -126,7 +126,7 @@ const clamp = (n: unknown) => Math.max(0, Math.min(40, Math.floor(Number(n) || 0
 
 export async function listAds(accountId: string, brandId: string) {
   await ownBrand(accountId, brandId);
-  const rows = await db.select({ id: schema.ads.id }).from(schema.ads).where(eq(schema.ads.brandId, brandId)).orderBy(desc(schema.ads.createdAt));
+  const rows = await db.select({ id: schema.ads.id }).from(schema.ads).where(eq(schema.ads.brandId, brandId)).orderBy(desc(schema.ads.createdAt), asc(schema.ads.id));
   return { ads: await adDTOs(rows.map((r) => r.id)) };
 }
 
@@ -157,8 +157,8 @@ async function saveVersion(ad: typeof schema.ads.$inferSelect, patch: Partial<No
   const v = await currentVersion(ad.id);
   if (!v) throw new HttpError(409, "ad is still being made");
   const copy = { ...v.copy, ...patch };
-  const renders = ad.status === "ready" ? await renderAll({ id: ad.id, style: ad.style, copy, imageUrl: v.imageUrl }) : {};
-  await db.insert(schema.adVersions).values({ adId: ad.id, version: v.version + 1, copy, layers: layersFor(ad.style, copy), imageUrl: v.imageUrl, renders });
+  // Fast save: final PNGs are rendered lazily at download time (the app previews live).
+  await db.insert(schema.adVersions).values({ adId: ad.id, version: v.version + 1, copy, layers: layersFor(ad.style, copy), imageUrl: v.imageUrl, renders: {} });
   await db.update(schema.ads).set({ currentVersion: v.version + 1 }).where(eq(schema.ads.id, ad.id));
 }
 
@@ -227,6 +227,10 @@ export async function download(accountId: string, brandId: string) {
   const safe = (s: string) => s.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "");
   let n = 0;
   for (const ad of ads.filter((a) => a.status === "ready" && !a.removed)) {
+    if (!ad.renders["4x5"] && ad.copy) {
+      ad.renders = await renderAll({ id: ad.id, style: ad.style, copy: ad.copy, imageUrl: ad.imageUrl });
+      await db.update(schema.adVersions).set({ renders: ad.renders }).where(and(eq(schema.adVersions.adId, ad.id), eq(schema.adVersions.version, ad.version)));
+    }
     for (const [fmt, url] of Object.entries(ad.renders)) {
       zip.file(`${safe(b.name)}_${ad.stage}_${safe(styleByKey(ad.style).name)}_${safe(ad.angle)}_${ad.id.slice(0, 6)}_${fmt}.png`, await getMedia(url));
       n++;

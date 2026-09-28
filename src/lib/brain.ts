@@ -149,7 +149,7 @@ function mockCopy(i: CopyInput): AdCopy {
     listicle: { headline: `3 reasons people switch to ${n}`, items: [f.result.slice(0, 40), "No more " + pain.toLowerCase(), f.guarantee.slice(0, 40)], scene: "" },
     screenshot_callouts: { headline: "Everything in one place", sub: "Updates itself", scene: "laptop showing the dashboard" },
     founder: { headline: `i built ${n.toLowerCase()} because i was sick of ${pain.toLowerCase()}`, scene: "founder selfie in the office" },
-    formula: { big: (f.number.match(/\d+/)?.[0]) ?? "30", headline: f.number.replace(/^\D*\d+\s*/, "") || f.number, sub: f.guarantee, extra: `${f.urgency} · ${f.result}`, scene: "dark moody backdrop" },
+    formula: (() => { const num = f.number.replace(/[[\]]/g, ""); return { big: num.match(/\d+/)?.[0] ?? "30", headline: num.replace(/^\D*\d+\s*/, "") || num, sub: f.guarantee, extra: `${f.urgency} · ${f.result}`, scene: "dark moody backdrop" }; })(),
     offer_color: { headline: `${f.number}. ${f.guarantee}.`, cta: "Get started", scene: "product on bright color" },
     objection: { headline: `Worried it won't work for you? ${f.guarantee}.`, scene: "dark texture" },
   };
