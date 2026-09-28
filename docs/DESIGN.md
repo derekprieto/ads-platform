@@ -13,7 +13,7 @@ Black and white. Clean. Modeled on Atlassian's design foundations.
 
 - **Spacing:** 8px base (Atlassian scale): 4, 8, 12, 16, 24, 32, 40, 48, 64, 80.
 - **Colors:**
-  - Text: `#0A0A0A`. Muted text: `#6B6B6B`.
+  - Text: `#0A0A0A`. Muted text: `#5E5E5E`.
   - Background: `#FFFFFF`. Subtle background: `#F7F7F7`.
   - Border: `#E5E5E5`.
   - Primary button: black background, white text.
