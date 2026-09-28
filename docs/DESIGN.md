@@ -4,6 +4,8 @@ Black and white. Clean. Modeled on Atlassian's design foundations.
 
 ## Principles
 
+0. **Responsive by structure.** Nothing overlaps, gets cut off or squished at any width (360px to 1920px). Fluid grids, wrapping, max-widths, breakpoints. Test at 390, 1024 and 1440px.
+
 1. **One page, one job, one main button.** The main button is the only black filled button.
 2. **Tell the user what happens next** in one short line at the top of each page.
 3. **No empty choices.** Smart defaults everywhere. Advanced options hidden.
