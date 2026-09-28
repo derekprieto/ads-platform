@@ -2,6 +2,15 @@
 
 Each entry: decision, why, evidence. Newest first.
 
+## 2026-09-28 (v4): For agencies and brands, all AI images, guided chat
+- One app for agencies and in-house brands (ecommerce, SaaS, services, info). Signup
+  asks "Brand or agency?" to set defaults only. Offer Brain detects business type.
+- All image ads fully AI generated with style recipes + real product reference +
+  best-of-4 AI judge. Exact text stays an editable layer. Replaces "text never by AI".
+- Guided chat (one question, clickable options) + gallery replaces page-per-step UI.
+- Open: image ad may cost 2 credits if best-of-4 costs exceed margin. Decide after
+  the blind model test.
+
 ## 2026-09-28 (v3): Credit-based pricing replaces flat per-brand price
 - 1 image ad = 1 credit, 1 video ad = 10 credits. Plans $39 / $99 / $299 for
   100 / 300 / 1,000 credits. 20 free credits on signup.

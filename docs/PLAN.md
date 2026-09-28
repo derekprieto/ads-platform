@@ -1,6 +1,6 @@
 # Master Plan
 
-Status: v3, 2026-09-28. Owner: head of engineering. Approver: CEO.
+Status: v4, 2026-09-28. Owner: head of engineering. Approver: CEO.
 
 **Rule #1: Simplicity scales.** One job per page. One main button per page.
 If a feature adds a choice the user must make, it needs a very good reason.
@@ -20,6 +20,34 @@ the feed, not like corporate ads. Then see which ones win and make more like the
 
 Like Arcads in ease of use, but for the whole funnel, images and video, with a
 results loop.
+
+## 2b. Who it is for (one app, two kinds of users)
+
+- **Agencies:** many client brands, switch between them.
+- **Brands making their own ads:** ecommerce, tech/SaaS, services, info products.
+
+Same app for both. At signup we ask one question: "Brand or agency?". It only changes
+defaults: a brand goes straight to its one brand; an agency sees the brand switcher.
+
+The Offer Brain detects the **business type** from the website and picks matching styles:
+
+| Type | What ads show | Typical Hot offer |
+|---|---|---|
+| Ecommerce | Product in hand, unboxing, flat lay, UGC with product | Discount, bundle, free shipping |
+| Tech / SaaS | App screenshot with callouts, workflow before/after, founder, memes about the pain | Free trial, demo, first month free |
+| Services / local | Before/after results, owner face, reviews | Free quote, consultation |
+| Info / coaching | Founder, results, bold claims | Free training, call |
+
+## 2c. AI makes every image, through a guided chat
+
+- Every image ad is fully AI generated from our style recipes (camera, light,
+  realism rules), the user's real product photo, and winning-ad references.
+- Best of 4: we generate 4 versions, an AI judge scores them, user sees the best one.
+- Exact text (prices, offers, screenshot UIs) stays an editable layer.
+- Main screen = **guided chat + gallery**. The assistant asks one question at a time
+  with clickable options. Ads appear in the chat. Users can type edits ("funnier").
+  Under the hood it runs the same fixed steps.
+- Before building: blind test of the top 3 image models with our media buyers.
 
 ## 3. The two rules for the output
 
